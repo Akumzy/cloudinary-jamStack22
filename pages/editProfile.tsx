@@ -5,11 +5,11 @@ import Image from "next/image";
 export default function EditProfile() {
   return (
     <>
-      <div className="px-4 py-2 ">
+      <div className="px-4 py-2 bg-[#FAFAFB] ">
         <Navigation />
       </div>
-      <section className="px-4">
-        <div className="mt-14 mb-6 flex items-center cursor-pointer md:w-[700px] mx-auto">
+      <section className="pt-10 px-4 bg-[#FAFAFB]">
+        <div className="mb-6 flex items-center cursor-pointer md:w-[700px] mx-auto">
           <LeftArrowIcon />
           <span className="text-[#2D9CDB] font-normal text-[18px] ">Back</span>
         </div>

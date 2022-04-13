@@ -17,7 +17,7 @@ export default function Login() {
         <div className="px-[38px] py-[50px] w-[380px] h-[400px] mx-auto rounded-3xl dark:bg-gray-800 bg-white border border-[#BDBDBD] ">
           <div className="w-fit  flex justify-center items-center mb-7 space-x-2">
             {checked ? <LogoIconLight /> : <LogoIcon />}
-            <p className="text-lg font-bold dark:text-blue-700 text-[#282051]">
+            <p className="text-lg font-bold dark:text-white text-[#282051]">
               Jam-Stack-Chat
             </p>
           </div>
