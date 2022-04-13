@@ -51,12 +51,12 @@ export default function Navigation() {
         <span>
           <LogoIcon />
         </span>
-        <p className="text-lg font-bold text-blue-900">Jam-Stack-Chat</p>
+        <p className="text-lg font-bold text-[#282051]">Jam-Stack-Chat</p>
       </div>
 
       <div className="flex items-center w-fit space-x-4">
         <div className="bg-slate-900 rounded-full p-2 w-8 h-8"></div>
-        <p className="font-bold">Ezeugo Obieze</p>
+        <p className="font-bold text-[#282051]">Ezeugo Obieze</p>
         <UserComponent />
       </div>
     </div>
