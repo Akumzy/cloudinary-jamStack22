@@ -16,7 +16,7 @@ export default function EditProfile() {
         <div className="mb-24 border-2 border-[#E0E0E0] md:w-[700px] mx-auto rounded-xl py-8 px-12 ">
           <span>
             <p className="font-normal text-2xl mb-1">Change Info</p>
-            <p className="text-[#828282] text-[13px] leading-[3.5px] font-medium mb-7 ">
+            <p className="text-[#828282] text-[13px] leading-4 font-medium mb-7 ">
               Changes will be reflected to every services
             </p>
           </span>

@@ -12,7 +12,10 @@ const UserComponent = () => {
     <div>
       <Menu as="div" className={"relative inline-block "}>
         <Menu.Button className={"h-9 w-9 "}>
-          <ArrowDownIcon />
+          <span className="hidden md:block">
+            <ArrowDownIcon />
+          </span>
+          <div className="block md:hidden bg-slate-900 rounded-full p-2 w-8 h-8"></div>
         </Menu.Button>
         <Menu.Items
           style={{ position: "absolute" }}
@@ -54,9 +57,11 @@ export default function Navigation() {
         <p className="text-lg font-bold text-[#282051]">Jam-Stack-Chat</p>
       </div>
 
-      <div className="flex items-center w-fit space-x-4">
-        <div className="bg-slate-900 rounded-full p-2 w-8 h-8"></div>
-        <p className="font-bold text-[#282051]">Ezeugo Obieze</p>
+      <div className="flex items-center w-fit space-x-4 ">
+        <div className="bg-slate-900 rounded-full p-2 w-8 h-8 hidden md:block"></div>
+        <p className="font-bold text-[#282051] hidden md:block">
+          Ezeugo Obieze
+        </p>
         <UserComponent />
       </div>
     </div>
