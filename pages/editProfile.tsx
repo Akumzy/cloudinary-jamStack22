@@ -22,7 +22,7 @@ export default function EditProfile() {
           </span>
           <div className="flex space-x-8 items-center mb-8">
             <div className="relative flex items-center justify-center w-20 h-20 border-2 border-slate-900 rounded-xl">
-              <div className="w-full h-full rounded-xl ">
+              <div className="w-full h-full rounded-xl p-1 ">
                 <Image
                   src={"/vercel.svg"}
                   width="100"
