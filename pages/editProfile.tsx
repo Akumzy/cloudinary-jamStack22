@@ -4,11 +4,11 @@ import Image from "next/image";
 
 export default function EditProfile() {
   return (
-    <>
-      <div className="px-4 py-2 bg-[#FAFAFB] ">
+    <div className="bg-[#FAFAFB] min-h-screen h-full">
+      <div className="px-4 py-2  ">
         <Navigation />
       </div>
-      <section className="pt-10 px-4 bg-[#FAFAFB]">
+      <section className="pt-16 px-4 pb-24 ">
         <div className="mb-6 flex items-center cursor-pointer md:w-[700px] mx-auto">
           <LeftArrowIcon />
           <span className="text-[#2D9CDB] font-normal text-[18px] ">Back</span>
@@ -81,6 +81,6 @@ export default function EditProfile() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
