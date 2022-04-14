@@ -1,11 +1,18 @@
+import { CameraIcon, LeftArrowIcon } from "../components/icons/images";
 import Navigation from "../components/Navigation";
 import Image from "next/image";
+import { getSession } from "next-auth/react";
+import { Session } from "inspector";
 
-export default function EditProfile() {
+interface Props {
+  user: User;
+}
+
+export default function EditProfile({ user }: Props) {
   return (
     <div className="bg-[#FAFAFB] min-h-screen h-full">
       <div className="px-4 py-2  ">
-        <Navigation />
+        <Navigation name={user.name} image={user.image} />
       </div>
       <section className="pt-12 md:px-4 md:pb-24   ">
         <div className="text-center mb-6 md:mb-11">
@@ -32,11 +39,10 @@ export default function EditProfile() {
             <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px] ">
               Photo
             </span>
-            <div className="w-[72px] h-[72px] rounded-lg ">
-              <Image
-                src={"/vercel.svg"}
-                width="100"
-                height="100"
+            <div className="w-[72px] h-[72px] rounded-lg overflow-hidden">
+              <img
+                className="w-full h-auto block"
+                src={user.image}
                 alt="user image"
               />
             </div>
@@ -47,7 +53,7 @@ export default function EditProfile() {
               Name
             </span>
             <div className="font-medium text-[#333333] text-[18px] ">
-              <p className="">Ezeugo Obieze</p>
+              <p className="">{user.name}</p>
             </div>
           </div>
 
@@ -68,7 +74,7 @@ export default function EditProfile() {
             </span>
             <div>
               <p className="font-medium text-[#333333] text-[18px] ">
-                ezeugoobieze@gmail.com
+                {user.email}
               </p>
             </div>
           </div>
@@ -76,4 +82,21 @@ export default function EditProfile() {
       </section>
     </div>
   );
+}
+
+export async function getServerSideProps(ctx: any) {
+  const session = await getSession(ctx);
+  if (session && session.user) {
+    return {
+      props: {
+        user: session.user,
+      },
+    };
+  }
+  return {
+    redirect: {
+      permanent: false,
+      destination: "/login",
+    },
+  };
 }
