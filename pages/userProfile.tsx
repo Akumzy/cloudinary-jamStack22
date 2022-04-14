@@ -1,4 +1,3 @@
-import { CameraIcon, LeftArrowIcon } from "../components/icons/images";
 import Navigation from "../components/Navigation";
 import Image from "next/image";
 

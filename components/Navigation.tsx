@@ -7,7 +7,7 @@ import {
   UserIcon,
 } from "./icons/images";
 
-const UserComponent = () => {
+export const UserComponent = () => {
   return (
     <div>
       <Menu as="div" className={"relative inline-block "}>
