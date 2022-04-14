@@ -1,15 +1,9 @@
-import { useState } from "react";
-import {
-  GoogleIcon,
-  LogoIcon,
-  LogoIconLight,
-  MoonIcon,
-  SunIconBright,
-  SunIconDark,
-} from "../components/icons/images";
+import { useState } from "react"
+import { getProviders, signIn } from "next-auth/react"
+import { GoogleIcon, LogoIcon, LogoIconLight, MoonIcon, SunIconBright, SunIconDark } from "../components/icons/images"
 
-export default function Login() {
-  const [checked, setChecked] = useState<boolean>(false);
+export default function Login({ providers }: any) {
+  const [checked, setChecked] = useState<boolean>(false)
 
   return (
     <div className={`${checked ? "dark" : ""}`}>
@@ -17,21 +11,23 @@ export default function Login() {
         <div className="px-[38px] py-[50px] w-[380px] h-[400px] mx-auto rounded-3xl dark:bg-gray-800 bg-white border border-[#BDBDBD] ">
           <div className="w-fit  flex justify-center items-center mb-7 space-x-2">
             {checked ? <LogoIconLight /> : <LogoIcon />}
-            <p className="text-lg font-bold dark:text-white text-[#282051]">
-              Jam-Stack-Chat
-            </p>
+            <p className="text-lg font-bold dark:text-white text-[#282051]">Jam-Stack-Chat</p>
           </div>
           <div className="w-[300px]  mb-[35px] dark:text-white">
             <p className="font text-lg font-medium leading-[25px] ">
               Join thousands of Develpers from around the world{" "}
             </p>
           </div>
-          <button className="flex justify-center items-center border-2 rounded-3xl px-4 py-1 hover:border-green-200 shadow-xl mx-auto ">
-            <GoogleIcon />
-            <p className="dark:text-white font-medium text-lg">
-              Sign in with Google
-            </p>
-          </button>
+          {Object.values(providers).map((provider: any) => (
+            <button
+              key={provider.name}
+              onClick={() => signIn(provider.id, { callbackUrl: "http://localhost:3000/userProfile" })}
+              className="flex justify-center items-center border-2 rounded-3xl px-4 py-1 hover:border-green-200 shadow-xl mx-auto "
+            >
+              <GoogleIcon />
+              <p className="dark:text-white font-medium text-lg">Sign in with {provider.name}</p>
+            </button>
+          ))}
 
           <div className="w-full my-4">
             <span className="flex w-24 justify-between mx-auto">
@@ -54,11 +50,8 @@ export default function Login() {
                   >
                     <div
                       className={
-                        `${
-                          checked
-                            ? "bg-white translate-x-5 duration-200 "
-                            : "translate-x-0 duration-200"
-                        } ` + "w-4 h-4 bg-white rounded-full shadow"
+                        `${checked ? "bg-white translate-x-5 duration-200 " : "translate-x-0 duration-200"} ` +
+                        "w-4 h-4 bg-white rounded-full shadow"
                       }
                     ></div>
                   </div>
@@ -70,5 +63,14 @@ export default function Login() {
         </div>
       </div>
     </div>
-  );
+  )
 }
+
+export async function getServerSideProps(context: any) {
+  const providers = await getProviders()
+  return {
+    props: { providers },
+  }
+}
+
+// http://localhost:3000/login?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2FuserProfile&error=OAuthCallback
