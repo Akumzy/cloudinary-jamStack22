@@ -1,4 +1,5 @@
-import { PlusIcon, SearchIcon } from "../components/icons/images";
+import Editor from "../components/Editor";
+import { PlusIcon, SearchIcon, SendIcon } from "../components/icons/images";
 import { UserComponent } from "../components/Navigation";
 
 export default function AppScreen() {
@@ -19,27 +20,27 @@ export default function AppScreen() {
             className="w-full bg-inherit outline-none p-2 text-[#828282] "
           />
         </div>
-        <div className="pl-[27px] mb-5 flex items-center">
+        <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
           <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-[#252329] text-white rounded-lg mr-3 ">
             FD
           </div>
-          <span className="font-bold text-[18px] text-[#E0E0E0] uppercase flex-1 ">
+          <span className="font-medium text-[15px] text-[#E0E0E0] uppercase flex-1 ">
             Front-end Developers
           </span>
         </div>
-        <div className="pl-[27px] mb-5 flex items-center">
+        <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
           <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-[#252329] text-white rounded-lg mr-3 ">
             BD
           </div>
-          <span className="font-bold text-[18px] text-[#E0E0E0] uppercase flex-1 ">
+          <span className="font-medium text-[15px] text-[#E0E0E0] uppercase flex-1 ">
             back-end Developer
           </span>
         </div>
-        <div className="pl-[27px] mb-5 flex items-center">
+        <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
           <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-[#252329] text-white rounded-lg mr-3 ">
             R
           </div>
-          <span className="font-bold text-[18px] text-[#E0E0E0] uppercase flex-1 ">
+          <span className="font-medium text-[15px] text-[#E0E0E0] uppercase flex-1 ">
             Random
           </span>
         </div>
@@ -53,11 +54,24 @@ export default function AppScreen() {
         </div>
       </div>
 
-      <div className="bg-[#252329] flex-1 text-white ">
-        <div className="boxShadow px-[27px] py-[17px] uppercase font-bold text-[18px] text-[#E0E0E0] ">
-          Front-end Developers
-        </div>
-        <div></div>
+      <div className="bg-[#252329] flex-1 text-white w-[calc(100vw-324px)] flex flex-col h-screen ">
+        <main className="flex-1 flex flex-col ">
+          <div className="h-[60px] boxShadow px-[27px] py-[17px] uppercase font-bold text-[18px] text-[#E0E0E0] ">
+            Front-end Developers
+          </div>
+          <div className="px-[27px] py-10 bg-black flex-1 ">
+            <div>sada</div>
+          </div>
+        </main>
+
+        <footer className=" bg-[#312933]  w-full px-[27px] py-4 min-h-[62px]  ">
+          <div className=" bg-[#3C393F] px-[17px] py-2  flex justify-between items-center rounded-lg">
+            <Editor />
+            <button className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white ">
+              <SendIcon />
+            </button>
+          </div>
+        </footer>
       </div>
     </div>
   );

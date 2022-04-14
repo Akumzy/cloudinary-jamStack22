@@ -1,10 +1,10 @@
-import { CameraIcon, LeftArrowIcon } from "../components/icons/images"
-import Navigation from "../components/Navigation"
-import Image from "next/image"
-import { getSession } from "next-auth/react"
+import { CameraIcon, LeftArrowIcon } from "../components/icons/images";
+import Navigation from "../components/Navigation";
+import Image from "next/image";
+import { getSession } from "next-auth/react";
 
 interface Props {
-  user: User
+  user: User;
 }
 export default function EditProfile({ user }: Props) {
   return (
@@ -27,7 +27,11 @@ export default function EditProfile({ user }: Props) {
           <div className="flex space-x-8 items-center mb-8">
             <div className="relative flex items-center justify-center w-20 h-20 border-2 border-slate-900 rounded-xl">
               <div className="w-full h-full rounded-xl p-1 overflow-hidden ">
-                <img src={user.image} className="w-full h-auto block" alt="user image" />
+                <img
+                  src={user.image}
+                  className="w-full h-auto block"
+                  alt="user image"
+                />
               </div>
               <div className="absolute bg-transparent">
                 <CameraIcon />
@@ -72,29 +76,36 @@ export default function EditProfile({ user }: Props) {
                 />
               </label>
               <div className="w-[82px] mt-6">
-                <button className="bg-[#2F80ED] p-2 w-full rounded-lg ">Save</button>
+                <button className="bg-[#2F80ED] p-2 w-full rounded-lg ">
+                  Save
+                </button>
               </div>
             </form>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
 
 export async function getServerSideProps(ctx: any) {
-  const session = await getSession(ctx)
+  const session = await getSession(ctx);
   if (session && session.user) {
     return {
       props: {
         user: session.user,
       },
-    }
+    };
   }
+  // return {
+  //   props: {
+  //     user: { name: "", image: "", email: "" },
+  //   },
+  // };
   return {
     redirect: {
       permanent: false,
       destination: "/login",
     },
-  }
+  };
 }
