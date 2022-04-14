@@ -93,6 +93,11 @@ export async function getServerSideProps(ctx: any) {
       },
     };
   }
+  // return {
+  //   props: {
+  //     user: { name: "", image: "", email: "" },
+  //   },
+  // };
   return {
     redirect: {
       permanent: false,

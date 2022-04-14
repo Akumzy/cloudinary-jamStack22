@@ -1,20 +1,33 @@
-import { Menu } from "@headlessui/react"
-import Image from "next/image"
-import { ArrowDownIcon, GroupUserIcon, LogoIcon, LogoutIcon, UserIcon } from "./icons/images"
+import { Menu } from "@headlessui/react";
+import Image from "next/image";
+import {
+  ArrowDownIcon,
+  GroupUserIcon,
+  LogoIcon,
+  LogoutIcon,
+  UserIcon,
+} from "./icons/images";
+import { useFloating, shift, offset, flip } from "@floating-ui/react-dom";
 
 export const UserComponent = () => {
+  const { x, y, reference, floating, strategy } = useFloating({
+    placement: "top-end",
+    middleware: [shift(), offset(8), flip()],
+  });
+
   return (
     <div>
       <Menu as="div" className={"relative inline-block "}>
-        <Menu.Button className={"h-9 w-9 "}>
+        <Menu.Button ref={reference} className={"h-9 w-9 "}>
           <span className="hidden md:block">
             <ArrowDownIcon />
           </span>
           <div className="block md:hidden bg-slate-900 rounded-full p-2 w-8 h-8"></div>
         </Menu.Button>
         <Menu.Items
-          style={{ position: "absolute" }}
-          className=" right-0 w-40 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          style={{ position: strategy, top: y ?? "", left: x ?? "" }}
+          ref={floating}
+          className=" w-40 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div className="px-1 py-1 ">
             <Menu.Item>
@@ -39,10 +52,16 @@ export const UserComponent = () => {
         </Menu.Items>
       </Menu>
     </div>
-  )
-}
+  );
+};
 
-export default function Navigation({ name, image }: { name: string; image: string }) {
+export default function Navigation({
+  name,
+  image,
+}: {
+  name: string;
+  image: string;
+}) {
   return (
     <div className="flex justify-between ">
       <div className="flex items-center w-fit space-x-2">
@@ -60,5 +79,5 @@ export default function Navigation({ name, image }: { name: string; image: strin
         <UserComponent />
       </div>
     </div>
-  )
+  );
 }
