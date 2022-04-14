@@ -1,11 +1,6 @@
-import { Menu } from "@headlessui/react";
-import {
-  ArrowDownIcon,
-  GroupUserIcon,
-  LogoIcon,
-  LogoutIcon,
-  UserIcon,
-} from "./icons/images";
+import { Menu } from "@headlessui/react"
+import Image from "next/image"
+import { ArrowDownIcon, GroupUserIcon, LogoIcon, LogoutIcon, UserIcon } from "./icons/images"
 
 const UserComponent = () => {
   return (
@@ -44,10 +39,10 @@ const UserComponent = () => {
         </Menu.Items>
       </Menu>
     </div>
-  );
-};
+  )
+}
 
-export default function Navigation() {
+export default function Navigation({ name, image }: { name: string; image: string }) {
   return (
     <div className="flex justify-between ">
       <div className="flex items-center w-fit space-x-2">
@@ -58,12 +53,12 @@ export default function Navigation() {
       </div>
 
       <div className="flex items-center w-fit space-x-4 ">
-        <div className="bg-slate-900 rounded-full p-2 w-8 h-8 hidden md:block"></div>
-        <p className="font-bold text-[#282051] hidden md:block">
-          Ezeugo Obieze
-        </p>
+        <div className="overflow-hidden rounded-full w-8 h-8 hidden md:block">
+          <img src={image} className="w-full h-auto block" alt="user image" />
+        </div>
+        <p className="font-bold text-[#282051] hidden md:block">{name}</p>
         <UserComponent />
       </div>
     </div>
-  );
+  )
 }

@@ -1,12 +1,16 @@
-import { CameraIcon, LeftArrowIcon } from "../components/icons/images";
-import Navigation from "../components/Navigation";
-import Image from "next/image";
+import { CameraIcon, LeftArrowIcon } from "../components/icons/images"
+import Navigation from "../components/Navigation"
+import Image from "next/image"
+import { getSession } from "next-auth/react"
 
-export default function EditProfile() {
+interface Props {
+  user: User
+}
+export default function EditProfile({ user }: Props) {
   return (
     <div className="bg-[#FAFAFB] min-h-screen h-full">
       <div className="px-4 py-2  ">
-        <Navigation />
+        <Navigation name={user.name} image={user.image} />
       </div>
       <section className="pt-16 px-4 pb-24 ">
         <div className="mb-6 flex items-center cursor-pointer md:w-[700px] mx-auto">
@@ -22,13 +26,8 @@ export default function EditProfile() {
           </span>
           <div className="flex space-x-8 items-center mb-8">
             <div className="relative flex items-center justify-center w-20 h-20 border-2 border-slate-900 rounded-xl">
-              <div className="w-full h-full rounded-xl p-1 ">
-                <Image
-                  src={"/vercel.svg"}
-                  width="100"
-                  height="100"
-                  alt="user image"
-                />
+              <div className="w-full h-full rounded-xl p-1 overflow-hidden ">
+                <img src={user.image} className="w-full h-auto block" alt="user image" />
               </div>
               <div className="absolute bg-transparent">
                 <CameraIcon />
@@ -73,14 +72,29 @@ export default function EditProfile() {
                 />
               </label>
               <div className="w-[82px] mt-6">
-                <button className="bg-[#2F80ED] p-2 w-full rounded-lg ">
-                  Save
-                </button>
+                <button className="bg-[#2F80ED] p-2 w-full rounded-lg ">Save</button>
               </div>
             </form>
           </div>
         </div>
       </section>
     </div>
-  );
+  )
+}
+
+export async function getServerSideProps(ctx: any) {
+  const session = await getSession(ctx)
+  if (session && session.user) {
+    return {
+      props: {
+        user: session.user,
+      },
+    }
+  }
+  return {
+    redirect: {
+      permanent: false,
+      destination: "/login",
+    },
+  }
 }

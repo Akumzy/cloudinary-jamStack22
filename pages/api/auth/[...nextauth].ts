@@ -1,9 +1,8 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import prisma from '../../../lib/prisma'
 
-const prisma = new PrismaClient()
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -16,6 +15,7 @@ export default NextAuth({
   callbacks: {
   async session({ session, token, user }) {
     // Send properties to the client, like an access_token from a provider.
+     
       if (session.user) {
         session.user.userId = user.id
       }
@@ -23,6 +23,6 @@ export default NextAuth({
   }
 },
   pages: {
-    signIn: "/signin",
+    signIn: "/login",
   },
 })
