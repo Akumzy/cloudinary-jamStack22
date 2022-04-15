@@ -8,6 +8,8 @@ import {
   UserIcon,
 } from "./icons/images";
 import { useFloating, shift, offset, flip } from "@floating-ui/react-dom";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 export const UserComponent = () => {
   const { x, y, reference, floating, strategy } = useFloating({
@@ -31,19 +33,28 @@ export const UserComponent = () => {
         >
           <div className="px-1 py-1 ">
             <Menu.Item>
-              <button className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base">
-                <UserIcon />
-                <span>My Profile</span>
-              </button>
+              <Link href={"/user-profile"}>
+                <button className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base">
+                  <UserIcon />
+                  <span>My Profile</span>
+                </button>
+              </Link>
             </Menu.Item>
             <Menu.Item>
-              <button className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base">
-                <GroupUserIcon />
-                <span>Group Chat</span>
-              </button>
+              <Link href={"/chat-screen"}>
+                <button className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base">
+                  <GroupUserIcon />
+                  <span>Chat Room</span>
+                </button>
+              </Link>
             </Menu.Item>
             <Menu.Item>
-              <button className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base">
+              <button
+                onClick={() => {
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base"
+              >
                 <LogoutIcon />
                 <span>Logout</span>
               </button>
@@ -75,7 +86,9 @@ export default function Navigation({
         <div className="overflow-hidden rounded-full w-8 h-8 hidden md:block">
           <img src={image} className="w-full h-auto block" alt="user image" />
         </div>
-        <p className="font-bold text-[#282051] hidden md:block">{name}</p>
+        <p className="font-bold text-[#282051] hidden md:block uppercase">
+          {name}
+        </p>
         <UserComponent />
       </div>
     </div>
