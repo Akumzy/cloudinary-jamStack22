@@ -1,11 +1,9 @@
-import { CameraIcon, LeftArrowIcon } from "../components/icons/images";
+import { CameraIcon } from "../components/icons/images";
 import Navigation from "../components/Navigation";
-import Image from "next/image";
 import { getSession } from "next-auth/react";
-import { Session } from "inspector";
 import { useRef, useState } from "react";
 
-interface Props {
+export interface Props {
   user: User;
 }
 
@@ -66,19 +64,22 @@ export default function EditProfile({ user }: Props) {
               </button>
             </div>
           </div>
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3] ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3]  ">
             <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px] ">
               Photo
             </span>
-            <div className="flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
+            <div className="cursor-not-allowed flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
               <img
-                className="w-full h-auto block"
+                className="w-full h-full block"
                 src={userPhoto}
                 alt="user image"
               />
               <div className="absolute bg-transparent cursor-pointer">
                 {editInfo ? (
-                  <div onClick={pickPhoto}>
+                  <div
+                    onClick={pickPhoto}
+                    className="flex items-center justify-center w-[72px] h-[72px] backdrop-blur-xl bg-white/30 rounded-lg overflow-hidden"
+                  >
                     <CameraIcon />
                   </div>
                 ) : null}
@@ -111,7 +112,8 @@ export default function EditProfile({ user }: Props) {
                   name="bioData"
                   id="bioData"
                   cols={30}
-                  rows={3}
+                  rows={2}
+                  maxLength={100}
                   className="w-full p-4 outline-none border-2"
                   value={userBio}
                   onChange={changeBioInfo}
