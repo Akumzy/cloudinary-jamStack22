@@ -3,12 +3,40 @@ import Navigation from "../components/Navigation";
 import Image from "next/image";
 import { getSession } from "next-auth/react";
 import { Session } from "inspector";
+import { useRef, useState } from "react";
 
 interface Props {
   user: User;
 }
 
 export default function EditProfile({ user }: Props) {
+  const [editInfo, setEditInfo] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(user.image);
+  const [userBio, setUserBio] = useState(
+    " I am a Frontend Website Developer..."
+  );
+  const imageRef = useRef<any>(null);
+
+  function editUserDetails() {
+    setEditInfo(true);
+    if (editInfo) {
+      const details = {
+        userBio,
+      };
+      setEditInfo(false);
+    }
+  }
+  function changeBioInfo(event: any) {
+    setUserBio(event.target.value);
+  }
+  function pickPhoto() {
+    imageRef.current.click();
+  }
+  function handlePhotoUpload(event: any) {
+    const uploadedPhoto = event.target.files[0];
+    const imgUrl = URL.createObjectURL(uploadedPhoto);
+    setUserPhoto(imgUrl);
+  }
   return (
     <div className="bg-[#FAFAFB] min-h-screen h-full">
       <div className="px-4 py-2  ">
@@ -29,9 +57,12 @@ export default function EditProfile({ user }: Props) {
                 Some info maybe visible to other people
               </p>
             </div>
-            <div className="border-[1px] border-[#828282] w-[95px] rounded-xl ">
+            <div
+              onClick={editUserDetails}
+              className="border-[1px] border-[#828282] w-[95px] rounded-xl "
+            >
               <button className="w-full p-2 text-[#828282] font-medium text-base ">
-                Edit
+                {editInfo ? "Save" : "Edit"}
               </button>
             </div>
           </div>
@@ -39,16 +70,29 @@ export default function EditProfile({ user }: Props) {
             <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px] ">
               Photo
             </span>
-            <div className="w-[72px] h-[72px] rounded-lg overflow-hidden">
+            <div className="flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
               <img
                 className="w-full h-auto block"
-                src={user.image}
+                src={userPhoto}
                 alt="user image"
+              />
+              <div className="absolute bg-transparent cursor-pointer">
+                {editInfo ? (
+                  <div onClick={pickPhoto}>
+                    <CameraIcon />
+                  </div>
+                ) : null}
+              </div>
+              <input
+                ref={imageRef}
+                type="file"
+                onChange={handlePhotoUpload}
+                hidden
               />
             </div>
           </div>
 
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3] ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3] cursor-not-allowed  ">
             <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px]  ">
               Name
             </span>
@@ -62,18 +106,30 @@ export default function EditProfile({ user }: Props) {
               Bio
             </div>
             <div className="flex-1  ">
-              <p className="font-medium text-[#333333] text-base ">
-                I am a Frontend Website Developer...
-              </p>
+              {editInfo ? (
+                <textarea
+                  name="bioData"
+                  id="bioData"
+                  cols={30}
+                  rows={3}
+                  className="w-full p-4 outline-none border-2"
+                  value={userBio}
+                  onChange={changeBioInfo}
+                ></textarea>
+              ) : (
+                <p className="font-medium text-[#333333] text-base cursor-not-allowed ">
+                  {userBio}
+                </p>
+              )}
             </div>
           </div>
 
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center md:space-x-40 space-x-16 border-b-[1px] border-b-[#D3D3D3] md:border-b-0  ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center md:space-x-40 space-x-16 border-b-[1px] border-b-[#D3D3D3] md:border-b-0 cursor-not-allowed   ">
             <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px]  ">
               Email
             </span>
             <div>
-              <p className="font-medium text-[#333333] text-[18px] ">
+              <p className="font-medium text-[#333333] text-[18px] cursor-not-allowed ">
                 {user.email}
               </p>
             </div>
@@ -93,15 +149,10 @@ export async function getServerSideProps(ctx: any) {
       },
     };
   }
-  // return {
-  //   props: {
-  //     user: { name: "", image: "", email: "" },
-  //   },
-  // };
   return {
     redirect: {
       permanent: false,
-      destination: "/login",
+      destination: "/",
     },
   };
 }
