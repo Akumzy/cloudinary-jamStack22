@@ -1,20 +1,18 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 
-export default function NewChannel() {
-  const [isOpen, setIsOpen] = useState(true);
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+export default function NewChannel({ onClose, isOpen }: ModalProps) {
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog
           as="div"
           className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closeModal}
+          onClose={onClose}
         >
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
@@ -75,8 +73,8 @@ export default function NewChannel() {
                 <div className="w-full flex justify-end">
                   <button
                     type="button"
-                    className="w-[100px] h-10 inline-flex items-center justify-center px-4 py-2 text-[18px] font-medium text-[#F2F2F2] bg-[#2F80ED] border border-transparent rounded-lg hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                    onClick={closeModal}
+                    className="w-[100px] h-10 inline-flex items-center justify-center px-4 py-2 text-[18px] font-medium text-[#F2F2F2] bg-[#2F80ED] border border-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    onClick={onClose}
                   >
                     Save
                   </button>
