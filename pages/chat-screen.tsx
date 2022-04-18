@@ -7,14 +7,21 @@ import NewChannel from "../components/NewChannel";
 import { Props } from "./user-profile";
 
 export default function AppScreen({ user }: Props) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
+  function openChannelModal() {
+    setIsOpen(true);
+  }
+  function closeChannelModal() {
+    setIsOpen(false);
+  }
 
   return (
     <div className="bg-[#FAFAFB] min-h-screen h-full flex ">
       <div className="w-[324px] bg-[#120F13] text-white">
         <div className="w-full h-[60px] px-[27px] flex py-[17px] boxShadow justify-between items-center ">
           <span className="font-bold text-[18px] text-[#E0E0E0]">Channels</span>
-          <div>
+          <div onClick={openChannelModal} className="cursor-pointer">
             <PlusIcon />
           </div>
         </div>
@@ -94,7 +101,7 @@ export default function AppScreen({ user }: Props) {
           </div>
         </footer>
       </div>
-      {isOpen ? <NewChannel /> : null}
+      <NewChannel onClose={closeChannelModal} isOpen={isOpen} />
     </div>
   );
 }
