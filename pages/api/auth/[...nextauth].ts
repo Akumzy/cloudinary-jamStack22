@@ -18,11 +18,12 @@ export default NextAuth({
      
       if (session.user) {
         session.user.userId = user.id
+        session.user.bio = user.bio ?? ''
       }
     return session
   }
 },
   pages: {
-    signIn: "/login",
+    signIn: "/",
   },
 })
