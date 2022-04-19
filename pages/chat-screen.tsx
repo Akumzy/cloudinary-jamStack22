@@ -1,62 +1,91 @@
 import { getSession } from "next-auth/react";
 import { useState } from "react";
 import Editor from "../components/Editor";
-import { PlusIcon, SearchIcon, SendIcon } from "../components/icons/images";
+import {
+  CloseMenuIcon,
+  MenuIcon,
+  PlusIcon,
+  SearchIcon,
+  SendIcon,
+} from "../components/icons/images";
+import MobileMenuDrawer from "../components/MobileMenuDrawer";
 import { UserComponent } from "../components/Navigation";
 import NewChannel from "../components/NewChannel";
 import { Props } from "./user-profile";
 
 export default function AppScreen({ user }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openModalMenu, setOpenModalMenu] = useState(false);
+
+  function closeMenuModal() {
+    setOpenModalMenu(false);
+    setOpenMenu(false);
+  }
+
+  function openMenuModal() {
+    setOpenModalMenu(true);
+  }
 
   function openChannelModal() {
     setIsOpen(true);
+    setOpenModalMenu(false);
   }
   function closeChannelModal() {
     setIsOpen(false);
   }
+  function menuOpen() {
+    openMenuModal();
+    setOpenMenu(true);
+  }
+  function menuClose() {
+    closeMenuModal();
+    setOpenMenu(false);
+  }
 
   return (
-    <div className="bg-[#FAFAFB] min-h-screen h-full flex ">
-      <div className="w-[324px] bg-[#120F13] text-white">
+    <div className="bg-white-offwhite min-h-screen h-full flex ">
+      <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
         <div className="w-full h-[60px] px-[27px] flex py-[17px] boxShadow justify-between items-center ">
-          <span className="font-bold text-[18px] text-[#E0E0E0]">Channels</span>
+          <span className="font-bold text-[18px] text-white-light">
+            Channels
+          </span>
           <div onClick={openChannelModal} className="cursor-pointer">
             <PlusIcon />
           </div>
         </div>
 
         <div className="h-[calc(100vh-120px)] py-5">
-          <div className="mx-[27px] mb-9 flex items-center space-x-1 bg-[#3C393F] rounded-lg px-2 ">
+          <div className="mx-[27px] mb-9 flex items-center space-x-1 bg-purple-off-purple rounded-lg px-2 ">
             <SearchIcon />
             <input
               type="search"
               placeholder="Search"
-              className="w-full bg-inherit outline-none p-2 text-[#828282] "
+              className="w-full bg-inherit outline-none p-2 text-blue-off-blue "
             />
           </div>
           <div>
             <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-              <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-[#252329] text-white rounded-lg mr-3 ">
+              <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
                 FD
               </div>
-              <span className="font-medium text-sm text-[#E0E0E0] uppercase flex-1 ">
+              <span className="font-medium text-sm text-white-light uppercase flex-1 ">
                 Front-end Developers
               </span>
             </div>
             <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-              <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-[#252329] text-white rounded-lg mr-3 ">
+              <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
                 BD
               </div>
-              <span className="font-medium text-sm text-[#E0E0E0] uppercase flex-1 ">
+              <span className="font-medium text-sm text-white-light uppercase flex-1 ">
                 back-end Developer
               </span>
             </div>
             <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-              <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-[#252329] text-white rounded-lg mr-3 ">
+              <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
                 R
               </div>
-              <span className="font-medium text-sm text-[#E0E0E0] uppercase flex-1 ">
+              <span className="font-medium text-sm text-white-light uppercase flex-1 ">
                 Random
               </span>
             </div>
@@ -72,7 +101,7 @@ export default function AppScreen({ user }: Props) {
                 alt="user image"
               />
             </div>
-            <p className="font-bold w-40 text-sm text-[#828282] hidden md:block uppercase truncate text-ellipsis ">
+            <p className="font-bold w-40 text-sm text-blue-off-blue hidden md:block uppercase truncate text-ellipsis ">
               {user.name}
             </p>
           </div>
@@ -82,10 +111,34 @@ export default function AppScreen({ user }: Props) {
         </div>
       </div>
 
-      <div className="bg-[#252329] flex-1 text-white w-[calc(100vw-324px)] flex flex-col h-screen ">
+      {/* Mobile Menu */}
+      {openMenu ? (
+        <MobileMenuDrawer
+          isOpenModal={openModalMenu}
+          closeModal={closeMenuModal}
+          openChannelModal={openChannelModal}
+          name={user.name}
+          image={user.image}
+        />
+      ) : null}
+
+      <div className="bg-purple-light-purple flex-1 text-white w-[calc(100vw-324px)] flex flex-col h-screen ">
         <main className="flex-1 flex flex-col ">
-          <div className="h-[60px] boxShadow px-[27px] py-[17px] uppercase font-bold text-[18px] text-[#E0E0E0] ">
-            Front-end Developers
+          <div className="flex items-center px-4 md:px-0 ">
+            <div onClick={menuOpen} className="cursor-pointer md:hidden block">
+              <MenuIcon />
+            </div>
+            <div className="w-full h-[60px] px-[27px] py-[17px] uppercase font-bold text-[18px] text-white-light ">
+              Front-end Developers
+            </div>
+            {openMenu ? (
+              <div
+                onClick={menuClose}
+                className="cursor-pointer md:hidden block "
+              >
+                <CloseMenuIcon />
+              </div>
+            ) : null}
           </div>
           <div className="px-[27px] py-10 bg-black flex-1 ">
             <div>sada</div>
@@ -93,7 +146,7 @@ export default function AppScreen({ user }: Props) {
         </main>
 
         <footer className=" bg-[#312933]  w-full px-[27px] py-4 min-h-[62px]  ">
-          <div className=" bg-[#3C393F] px-[17px] py-2  flex justify-between items-center rounded-lg">
+          <div className=" bg-purple-off-purple px-[17px] py-2  flex justify-between items-center rounded-lg">
             <Editor />
             <button className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white ">
               <SendIcon />
