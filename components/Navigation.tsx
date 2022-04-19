@@ -11,7 +11,10 @@ import { useFloating, shift, offset, flip } from "@floating-ui/react-dom";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-export const UserComponent = () => {
+interface imageProp {
+  image?: string;
+}
+export const UserComponent = ({ image }: imageProp) => {
   const { x, y, reference, floating, strategy } = useFloating({
     placement: "top-end",
     middleware: [shift(), offset(8), flip()],
@@ -24,7 +27,9 @@ export const UserComponent = () => {
           <span className="hidden md:block">
             <ArrowDownIcon />
           </span>
-          <div className="block md:hidden bg-slate-900 rounded-full p-2 w-8 h-8"></div>
+          <div className="block md:hidden rounded-full overflow-hidden w-8 h-8">
+            <img src={image} className="w-full h-auto block" alt="user image" />
+          </div>
         </Menu.Button>
         <Menu.Items
           style={{ position: strategy, top: y ?? "", left: x ?? "" }}
@@ -89,7 +94,7 @@ export default function Navigation({
         <p className="font-bold text-[#282051] hidden md:block uppercase">
           {name}
         </p>
-        <UserComponent />
+        <UserComponent image={image} />
       </div>
     </div>
   );

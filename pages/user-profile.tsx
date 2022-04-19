@@ -18,9 +18,6 @@ export default function EditProfile({ user }: Props) {
   function editUserDetails() {
     setEditInfo(true);
     if (editInfo) {
-      const details = {
-        userBio,
-      };
       setEditInfo(false);
     }
   }
@@ -36,7 +33,7 @@ export default function EditProfile({ user }: Props) {
     setUserPhoto(imgUrl);
   }
   return (
-    <div className="bg-[#FAFAFB] min-h-screen h-full">
+    <div className="bg-white-offwhite min-h-screen h-full">
       <div className="px-4 py-2  ">
         <Navigation name={user.name} image={user.image} />
       </div>
@@ -47,25 +44,25 @@ export default function EditProfile({ user }: Props) {
             Basic info, like your name and photo
           </p>
         </div>
-        <div className="md:border-2 md:border-[#E0E0E0] md:w-[700px] md:mx-auto md:rounded-xl">
-          <div className="px-[22px] md:px-[50px] py-7 flex items-center justify-between border-b-[1px] border-b-[#D3D3D3] ">
+        <div className="md:border-2 md:border-white-light md:w-[700px] md:mx-auto md:rounded-xl">
+          <div className="px-[22px] md:px-[50px] py-7 flex items-center justify-between border-b-[1px] border-b-white-cream ">
             <div>
               <p className="font-normal text-2xl mb-1">Profile</p>
-              <p className="text-[#828282] w-[180px] md:w-auto text-[13px] leading-4 font-medium mb-7 ">
+              <p className="text-blue-off-blue w-[180px] md:w-auto text-[13px] leading-4 font-medium mb-7 ">
                 Some info maybe visible to other people
               </p>
             </div>
             <div
               onClick={editUserDetails}
-              className="border-[1px] border-[#828282] w-[95px] rounded-xl "
+              className="border-[1px] border-blue-off-blue w-[95px] rounded-xl "
             >
-              <button className="w-full p-2 text-[#828282] font-medium text-base ">
+              <button className="w-full p-2 text-blue-off-blue font-medium text-base ">
                 {editInfo ? "Save" : "Edit"}
               </button>
             </div>
           </div>
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3]  ">
-            <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px] ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-white-cream  ">
+            <span className="text-blue-light-blue uppercase text-[13px] font-medium w-[43px] ">
               Photo
             </span>
             <div className="cursor-not-allowed flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
@@ -93,17 +90,17 @@ export default function EditProfile({ user }: Props) {
             </div>
           </div>
 
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3] cursor-not-allowed  ">
-            <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px]  ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-white-cream cursor-not-allowed  ">
+            <span className="text-blue-light-blue uppercase text-[13px] font-medium w-[43px]  ">
               Name
             </span>
-            <div className="font-medium text-[#333333] text-[18px] ">
+            <div className="font-medium text-blue-darkblue text-[18px] ">
               <p className="">{user.name}</p>
             </div>
           </div>
 
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center md:space-x-40 space-x-16 border-b-[1px] border-b-[#D3D3D3] ">
-            <div className="text-[#BDBDBD] uppercase text-[13px] font-medium  w-[43px]  ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center md:space-x-40 space-x-16 border-b-[1px] border-b-white-cream ">
+            <div className="text-blue-light-blue uppercase text-[13px] font-medium  w-[43px]  ">
               Bio
             </div>
             <div className="flex-1  ">
@@ -119,19 +116,19 @@ export default function EditProfile({ user }: Props) {
                   onChange={changeBioInfo}
                 ></textarea>
               ) : (
-                <p className="font-medium text-[#333333] text-base cursor-not-allowed ">
+                <p className="font-medium text-blue-darkblue text-base cursor-not-allowed ">
                   {userBio}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="px-[22px] md:px-[50px] py-6 flex items-center md:space-x-40 space-x-16 border-b-[1px] border-b-[#D3D3D3] md:border-b-0 cursor-not-allowed   ">
-            <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px]  ">
+          <div className="px-[22px] md:px-[50px] py-6 flex items-center md:space-x-40 space-x-16 border-b-[1px] border-b-white-cream md:border-b-0 cursor-not-allowed   ">
+            <span className="text-blue-light-blue uppercase text-[13px] font-medium w-[43px]  ">
               Email
             </span>
             <div>
-              <p className="font-medium text-[#333333] text-[18px] cursor-not-allowed ">
+              <p className="font-medium text-blue-darkblue text-[18px] cursor-not-allowed ">
                 {user.email}
               </p>
             </div>
