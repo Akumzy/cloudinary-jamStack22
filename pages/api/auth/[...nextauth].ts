@@ -1,8 +1,7 @@
-import NextAuth from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import prisma from '../../../lib/prisma'
-
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "../../../lib/prisma";
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -13,17 +12,17 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-  async session({ session, token, user }) {
-    // Send properties to the client, like an access_token from a provider.
-     
+    async session({ session, token, user }) {
+      // Send properties to the client, like an access_token from a provider.
+
       if (session.user) {
         session.user.userId = user.id
         session.user.bio = user.bio ?? ''
       }
-    return session
-  }
-},
+      return session;
+    },
+  },
   pages: {
     signIn: "/",
   },
-})
+});
