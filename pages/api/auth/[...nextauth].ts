@@ -16,13 +16,13 @@ export default NextAuth({
       // Send properties to the client, like an access_token from a provider.
 
       if (session.user) {
-        session.user.userId = user.id;
+        session.user.userId = user.id
+        session.user.bio = user.bio ?? ''
       }
       return session;
     },
   },
   pages: {
     signIn: "/",
-    signOut: "/",
   },
 });
