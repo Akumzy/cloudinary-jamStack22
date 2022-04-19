@@ -9,7 +9,7 @@ import { updateUserProfile } from "../services/profile";
 import { cld } from "../lib/cloudinary";
 import CloudinaryUploadWidget from "../components/CloudinaryWidget";
 
-interface Props {
+export interface Props {
   user: User;
 }
 
