@@ -1,10 +1,10 @@
-import React, { Component } from "react"
-import { CameraIcon } from "./icons/images"
-import axios from "axios"
+import React, { Component } from "react";
+import { CameraIcon } from "./icons/images";
+import axios from "axios";
 
 type MyProps = {
-  update: (imgUrl: string) => void
-}
+  update: (imgUrl: string) => void;
+};
 
 class CloudinaryUploadWidget extends Component<MyProps> {
   componentDidMount() {
@@ -15,28 +15,27 @@ class CloudinaryUploadWidget extends Component<MyProps> {
       },
       (error: any, result: any) => {
         if (!error && result && result.event === "success") {
-          const imgUrl = result.info.secure_url
+          const imgUrl = result.info.secure_url;
           axios
             .patch("/api/user/updatephoto", {
               image: imgUrl,
             })
             .then((res) => {
-              this.props.update(imgUrl)
-              console.log("Done! Here is the image info: ", result.info)
+              this.props.update(imgUrl);
             })
             .catch((err) => {
-              console.log(err)
-            })
+              console.log(err);
+            });
         }
-      },
-    )
+      }
+    );
     document.getElementById("upload_widget")?.addEventListener(
       "click",
       function () {
-        myWidget.open()
+        myWidget.open();
       },
-      false,
-    )
+      false
+    );
   }
 
   render() {
@@ -44,8 +43,8 @@ class CloudinaryUploadWidget extends Component<MyProps> {
       <button id="upload_widget">
         <CameraIcon />
       </button>
-    )
+    );
   }
 }
 
-export default CloudinaryUploadWidget
+export default CloudinaryUploadWidget;
