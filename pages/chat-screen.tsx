@@ -97,7 +97,7 @@ export default function AppScreen({ user }: Props) {
             <div className="rounded-full w-8 h-8 overflow-hidden hidden md:block">
               <img
                 src={user.image}
-                className="w-full h-auto block"
+                className="w-full h-full block"
                 alt="user image"
               />
             </div>
@@ -105,7 +105,7 @@ export default function AppScreen({ user }: Props) {
               {user.name}
             </p>
           </div>
-          <div className="flex items-center bg-white rounded-full h-6 w-6">
+          <div className="flex items-center px-1 bg-white rounded-full h-8 w-8">
             <UserComponent />
           </div>
         </div>

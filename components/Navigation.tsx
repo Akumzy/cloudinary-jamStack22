@@ -17,7 +17,7 @@ interface imageProp {
 export const UserComponent = ({ image }: imageProp) => {
   const { x, y, reference, floating, strategy } = useFloating({
     placement: "top-end",
-    middleware: [shift(), offset(8), flip()],
+    middleware: [shift(), offset(11), flip()],
   });
 
   return (
@@ -28,7 +28,7 @@ export const UserComponent = ({ image }: imageProp) => {
             <ArrowDownIcon />
           </span>
           <div className="block md:hidden rounded-full overflow-hidden w-8 h-8">
-            <img src={image} className="w-full h-auto block" alt="user image" />
+            <img src={image} className="w-full h-full block" alt="user image" />
           </div>
         </Menu.Button>
         <Menu.Items
@@ -89,7 +89,7 @@ export default function Navigation({
 
       <div className="flex items-center w-fit space-x-4 ">
         <div className="overflow-hidden rounded-full w-8 h-8 hidden md:block">
-          <img src={image} className="w-full h-auto block" alt="user image" />
+          <img src={image} className="w-full h-full block" alt="user image" />
         </div>
         <p className="font-bold text-[#282051] hidden md:block uppercase">
           {name}

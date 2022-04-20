@@ -1,12 +1,8 @@
-import { CameraIcon, LeftArrowIcon } from "../components/icons/images";
 import Navigation from "../components/Navigation";
 import Script from "next/script";
-import Image from "next/image";
 import { getSession } from "next-auth/react";
-import { Session } from "inspector";
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import { updateUserProfile } from "../services/profile";
-import { cld } from "../lib/cloudinary";
 import CloudinaryUploadWidget from "../components/CloudinaryWidget";
 
 export interface Props {
@@ -14,11 +10,9 @@ export interface Props {
 }
 
 export default function EditProfile({ user }: Props) {
-  const [uploadPhoto, setUploadPhoto] = useState<File>();
   const [editInfo, setEditInfo] = useState(false);
   const [userPhoto, setUserPhoto] = useState(user.image);
   const [userBio, setUserBio] = useState(user.bio);
-  const imageRef = useRef<any>(null);
 
   function editUserDetails() {
     setEditInfo(true);
@@ -29,18 +23,12 @@ export default function EditProfile({ user }: Props) {
   function changeBioInfo(event: any) {
     setUserBio(event.target.value);
   }
-  function handlePhotoUpload(event: any) {
-    const uploadedPhoto = event.target.files[0];
-    setUploadPhoto(uploadedPhoto);
-    const imgUrl = URL.createObjectURL(uploadedPhoto);
-    setUserPhoto(imgUrl);
-  }
 
   async function handleProfileUpdate() {
     if (!userBio) return;
     const { data, error } = await updateUserProfile(userBio);
     if (data) {
-      console.log(data);
+      setUserPhoto(data.image);
       setUserBio(data.bio);
     }
     setEditInfo(false);
@@ -61,7 +49,7 @@ export default function EditProfile({ user }: Props) {
         strategy="beforeInteractive"
       />
       <div className="px-4 py-2 ">
-        <Navigation name={user.name} image={user.image} />
+        <Navigation name={user.name} image={userPhoto} />
       </div>
       <section className="pt-12 md:px-4 md:pb-24 ">
         <div className="mb-6 text-center md:mb-11">
@@ -93,7 +81,7 @@ export default function EditProfile({ user }: Props) {
             </span>
             <div className="flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
               <img
-                className="block w-full h-auto"
+                className="block w-full h-full"
                 src={userPhoto}
                 alt="user image"
               />
@@ -102,12 +90,6 @@ export default function EditProfile({ user }: Props) {
                   <CloudinaryUploadWidget update={setUserPhoto} />
                 ) : null}
               </div>
-              <input
-                ref={imageRef}
-                type="file"
-                onChange={handlePhotoUpload}
-                hidden
-              />
             </div>
           </div>
 
