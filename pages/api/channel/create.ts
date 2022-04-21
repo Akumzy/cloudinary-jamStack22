@@ -2,7 +2,6 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/react"
 import prisma from "../../../lib/prisma"
-import cloudinary  from "../../../lib/cloudinary"
 
 type Data = {
   message: string
@@ -25,13 +24,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
   const user = session.user
     const {
-      name
+      name,description
   } = req.body
+
+  
 
     try {
         const chatRoom = await prisma.chatRoom.create({
             data: {
                 name,
+                description,
                 creatorId: user.userId,
                 messages: {
                     create: [
