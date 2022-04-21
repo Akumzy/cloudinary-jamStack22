@@ -1,19 +1,19 @@
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Editor from "../components/Editor";
+import Editor from "../../components/Editor";
 import {
   CloseMenuIcon,
   MenuIcon,
   PlusIcon,
   SearchIcon,
   SendIcon,
-} from "../components/icons/images";
-import MobileMenuDrawer from "../components/MobileMenuDrawer";
-import { UserComponent } from "../components/Navigation";
-import NewChannel from "../components/NewChannel";
-import { listChannels } from "../services/channels";
-import { getAcronyms } from "../utils/utils";
-import { Props } from "./user-profile";
+} from "../../components/icons/images";
+import MobileMenuDrawer from "../../components/MobileMenuDrawer";
+import { UserComponent } from "../../components/Navigation";
+import NewChannel from "../../components/NewChannel";
+import { listChannels } from "../../services/channels";
+import { getAcronyms } from "../../utils/utils";
+import { Props } from "../user-profile";
 
 export default function AppScreen({ user }: Props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +27,7 @@ export default function AppScreen({ user }: Props) {
       console.error(error);
       return;
     }
+    // console.log(data);
     setChannels(data);
   };
   useEffect(() => {
