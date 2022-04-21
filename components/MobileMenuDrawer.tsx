@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { getAcronyms } from "../utils/utils";
 import { PlusIcon, SearchIcon } from "./icons/images";
 import { UserComponent } from "./Navigation";
 
@@ -9,6 +10,7 @@ interface Props {
   name: string;
   image: string;
   openChannelModal: () => void;
+  channels: Array<any>;
 }
 export default function MobileMenuDrawer({
   isOpenModal,
@@ -16,6 +18,7 @@ export default function MobileMenuDrawer({
   openChannelModal,
   name,
   image,
+  channels,
 }: Props) {
   return (
     <>
@@ -66,32 +69,18 @@ export default function MobileMenuDrawer({
                         className="w-full bg-inherit outline-none p-2 text-blue-off-blue "
                       />
                     </div>
-                    <div>
-                      <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-                        <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
-                          FD
+                    {channels.map((channel: any) => (
+                      <div key={channel.id}>
+                        <div className="pl-[27px] mb-5 flex items-center cursor-pointer uppercase">
+                          <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
+                            {getAcronyms(channel.name)}
+                          </div>
+                          <span className="font-medium text-sm text-white-light uppercase ">
+                            {channel.name}
+                          </span>
                         </div>
-                        <span className="font-medium text-sm text-white-light uppercase ">
-                          Front-end Developers
-                        </span>
                       </div>
-                      <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-                        <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
-                          BD
-                        </div>
-                        <span className="font-medium text-sm text-white-light uppercase ">
-                          back-end Developer
-                        </span>
-                      </div>
-                      <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-                        <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
-                          R
-                        </div>
-                        <span className="font-medium text-sm text-white-light uppercase ">
-                          Random
-                        </span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   <div className="flex items-center  w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
                     <div className="flex items-center justify-end flex-1 mr-2 truncate text-ellipsis  ">
