@@ -31,7 +31,7 @@ export default function MobileMenuDrawer({
               enter="-translate-x-full"
               enterFrom="opacity-0"
               enterTo="opacity-100"
-              leave="-translate-x-full"
+              leave="translate-x-full"
               leaveFrom="opacity-60"
               leaveTo="opacity-0"
             >
@@ -43,7 +43,7 @@ export default function MobileMenuDrawer({
               enter="-translate-x-full"
               enterFrom="opacity-0 scale-95"
               enterTo="opacity-100 scale-100"
-              leave="-translate-x-full"
+              leave="translate-x-full"
               leaveFrom="opacity-60 scale-100"
               leaveTo="opacity-0 scale-95"
             >
