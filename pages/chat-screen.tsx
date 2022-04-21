@@ -1,5 +1,5 @@
 import { getSession } from "next-auth/react";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import Editor from "../components/Editor";
 import {
   CloseMenuIcon,
@@ -145,7 +145,7 @@ export default function AppScreen({ user }: Props) {
           </div>
         </main>
 
-        <footer className=" bg-[#312933]  w-full px-[27px] py-4 min-h-[62px]  ">
+        <footer className=" bg-[#312933] w-full px-[27px] py-4 min-h-[62px]  ">
           <div className=" bg-purple-off-purple px-[17px] py-2  flex justify-between items-center rounded-lg">
             <Editor />
             <button className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white ">
