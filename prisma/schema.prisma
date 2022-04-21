@@ -59,12 +59,13 @@ model VerificationToken {
 }
 
 model ChatRoom {
-  id        String           @id @default(cuid())
-  name      String
-  messages  Message[]
-  members   ChatRoomMember[]
-  creatorId String
-  createdAt DateTime         @default(now())
+  id          String           @id @default(cuid())
+  name        String
+  description String
+  messages    Message[]
+  members     ChatRoomMember[]
+  creatorId   String
+  createdAt   DateTime         @default(now())
 }
 
 model ChatRoomMember {
