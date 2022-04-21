@@ -1,33 +1,18 @@
-<<<<<<< HEAD
 import Navigation from "../components/Navigation";
 import Script from "next/script";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
 import { updateUserProfile } from "../services/profile";
 import CloudinaryUploadWidget from "../components/CloudinaryWidget";
-=======
-import Navigation from "../components/Navigation"
-import Script from "next/script"
-import { getSession } from "next-auth/react"
-import { useState } from "react"
-import { updateUserProfile } from "../services/profile"
-import CloudinaryUploadWidget from "../components/CloudinaryWidget"
->>>>>>> 0c2a798705af5c5e72a072033e162deefc8030f5
 
 export interface Props {
   user: User;
 }
 
 export default function EditProfile({ user }: Props) {
-<<<<<<< HEAD
   const [editInfo, setEditInfo] = useState(false);
   const [userPhoto, setUserPhoto] = useState(user.image);
   const [userBio, setUserBio] = useState(user.bio);
-=======
-  const [editInfo, setEditInfo] = useState(false)
-  const [userPhoto, setUserPhoto] = useState(user.image)
-  const [userBio, setUserBio] = useState(user.bio)
->>>>>>> 0c2a798705af5c5e72a072033e162deefc8030f5
 
   function editUserDetails() {
     setEditInfo(true);
@@ -43,13 +28,8 @@ export default function EditProfile({ user }: Props) {
     if (!userBio) return;
     const { data, error } = await updateUserProfile(userBio);
     if (data) {
-<<<<<<< HEAD
       setUserPhoto(data.image);
       setUserBio(data.bio);
-=======
-      setUserPhoto(data.image)
-      setUserBio(data.bio)
->>>>>>> 0c2a798705af5c5e72a072033e162deefc8030f5
     }
     setEditInfo(false);
   }
@@ -100,15 +80,11 @@ export default function EditProfile({ user }: Props) {
               Photo
             </span>
             <div className="flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
-<<<<<<< HEAD
               <img
                 className="block w-full h-full"
                 src={userPhoto}
                 alt="user image"
               />
-=======
-              <img className="block w-full h-full" src={userPhoto} alt="user image" />
->>>>>>> 0c2a798705af5c5e72a072033e162deefc8030f5
               <div className="absolute bg-transparent cursor-pointer">
                 {editInfo ? (
                   <CloudinaryUploadWidget update={setUserPhoto} />
