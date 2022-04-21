@@ -7,8 +7,7 @@ type Data = {
   message: string
 }
 
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data|any>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data | any>) {
   //if method not POST, return 405
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not Allowed" })
@@ -23,47 +22,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   const user = session.user
-    const {
-      name,description
-  } = req.body
+  const { name, description } = req.body
 
-  
-
-    try {
-        const chatRoom = await prisma.chatRoom.create({
-            data: {
-                name,
-                description,
-                creatorId: user.userId,
-                messages: {
-                    create: [
-                        {
-                            isDefault: true,
-                            text: `Channel created by ${user.name}`,
-                            user: {
-                                connect: {
-                                    id: user.userId
-                                }
-                            },    
-                        }
-                    ]
-                }
+  try {
+    const chatRoom = await prisma.chatRoom.create({
+      data: {
+        name,
+        description,
+        creatorId: user.userId,
+        messages: {
+          create: [
+            {
+              isDefault: true,
+              text: `Channel created by ${user.name}`,
+              user: {
+                connect: {
+                  id: user.userId,
+                },
+              },
             },
-            include: {
-                messages: true
-            }
-        })
+          ],
+        },
+        members: {
+          create: [
+            {
+              user: {
+                connect: {
+                  id: user.userId,
+                },
+              },
+            },
+          ],
+        },
+      },
+      include: {
+        messages: true,
+        members: true,
+      },
+    })
 
-        res.status(200).json(chatRoom)
-
-
-   
+    res.status(200).json(chatRoom)
 
     // return res.status(200).json(updatedUser)
-    
   } catch (error) {
     console.log(error)
     return res.status(500).json({ message: "Internal Server Error" })
   }
-  
 }

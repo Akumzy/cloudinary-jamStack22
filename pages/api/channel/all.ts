@@ -26,7 +26,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   
 
     try {
-        const chatRooms = await prisma.chatRoom.findMany()
+        const chatRooms = await prisma.chatRoom.findMany({
+            include: {
+                members: true,
+            },
+        })
         res.status(200).json(chatRooms)
 
 
