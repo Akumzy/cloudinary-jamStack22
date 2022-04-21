@@ -1,35 +1,18 @@
-<<<<<<< HEAD
 import Navigation from "../components/Navigation"
 import Script from "next/script"
 import { getSession } from "next-auth/react"
-import { useRef, useState, useEffect } from "react"
+import { useState } from "react"
 import { updateUserProfile } from "../services/profile"
 import CloudinaryUploadWidget from "../components/CloudinaryWidget"
-=======
-import Navigation from "../components/Navigation";
-import Script from "next/script";
-import { getSession } from "next-auth/react";
-import { useState } from "react";
-import { updateUserProfile } from "../services/profile";
-import CloudinaryUploadWidget from "../components/CloudinaryWidget";
->>>>>>> 1a64a49d86272c1bfb9001af16a630b8a798dfd1
 
 export interface Props {
   user: User
 }
 
 export default function EditProfile({ user }: Props) {
-<<<<<<< HEAD
-  const [uploadPhoto, setUploadPhoto] = useState<File>()
   const [editInfo, setEditInfo] = useState(false)
   const [userPhoto, setUserPhoto] = useState(user.image)
   const [userBio, setUserBio] = useState(user.bio)
-  const imageRef = useRef<any>(null)
-=======
-  const [editInfo, setEditInfo] = useState(false);
-  const [userPhoto, setUserPhoto] = useState(user.image);
-  const [userBio, setUserBio] = useState(user.bio);
->>>>>>> 1a64a49d86272c1bfb9001af16a630b8a798dfd1
 
   function editUserDetails() {
     setEditInfo(true)
@@ -40,27 +23,13 @@ export default function EditProfile({ user }: Props) {
   function changeBioInfo(event: any) {
     setUserBio(event.target.value)
   }
-<<<<<<< HEAD
-  function handlePhotoUpload(event: any) {
-    const uploadedPhoto = event.target.files[0]
-    setUploadPhoto(uploadedPhoto)
-    const imgUrl = URL.createObjectURL(uploadedPhoto)
-    setUserPhoto(imgUrl)
-  }
-=======
->>>>>>> 1a64a49d86272c1bfb9001af16a630b8a798dfd1
 
   async function handleProfileUpdate() {
     if (!userBio) return
     const { data, error } = await updateUserProfile(userBio)
     if (data) {
-<<<<<<< HEAD
-      console.log(data)
+      setUserPhoto(data.image)
       setUserBio(data.bio)
-=======
-      setUserPhoto(data.image);
-      setUserBio(data.bio);
->>>>>>> 1a64a49d86272c1bfb9001af16a630b8a798dfd1
     }
     setEditInfo(false)
   }
@@ -99,22 +68,10 @@ export default function EditProfile({ user }: Props) {
           <div className="px-[22px] md:px-[50px] py-6 flex items-center space-x-40 border-b-[1px] border-b-[#D3D3D3] ">
             <span className="text-[#BDBDBD] uppercase text-[13px] font-medium w-[43px] ">Photo</span>
             <div className="flex items-center justify-center w-[72px] h-[72px] rounded-lg overflow-hidden border-2 relative">
-<<<<<<< HEAD
-              <img className="block w-full h-auto" src={userPhoto} alt="user image" />
-=======
-              <img
-                className="block w-full h-full"
-                src={userPhoto}
-                alt="user image"
-              />
->>>>>>> 1a64a49d86272c1bfb9001af16a630b8a798dfd1
+              <img className="block w-full h-full" src={userPhoto} alt="user image" />
               <div className="absolute bg-transparent cursor-pointer">
                 {editInfo ? <CloudinaryUploadWidget update={setUserPhoto} /> : null}
               </div>
-<<<<<<< HEAD
-              <input ref={imageRef} type="file" onChange={handlePhotoUpload} hidden />
-=======
->>>>>>> 1a64a49d86272c1bfb9001af16a630b8a798dfd1
             </div>
           </div>
 

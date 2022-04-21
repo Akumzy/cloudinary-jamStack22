@@ -25,13 +25,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
   const user = session.user
     const {
-      name
+      name,description
   } = req.body
 
     try {
         const chatRoom = await prisma.chatRoom.create({
             data: {
                 name,
+                description,
                 creatorId: user.userId,
                 messages: {
                     create: [
