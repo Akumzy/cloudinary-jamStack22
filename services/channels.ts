@@ -46,12 +46,14 @@ export const getChannelById = async (
   }
 };
 
-const getUserById = async (id: string) => {
+export const getUserById = async (
+  id: string
+): Promise<{ data: any; error: any }> => {
   try {
     const { data } = await axios.get(`/api/user/${id}`);
-    return data;
+    return { data, error: null };
   } catch (error: any) {
-    return error.response.data.message;
+    return { data: null, error: error.response.data.message };
   }
 };
-export const getUserByIdFetcher = (id: string) => getUserById(id);
+// export const getUserByIdFetcher = (id: string) => getUserById(id);

@@ -81,20 +81,21 @@ export default function Channels({ user }: Props) {
               className="w-full bg-inherit outline-none p-2 text-blue-off-blue "
             />
           </div>
-          {channels.map((channel: any) => {
-            return (
-              <div onClick={() => onclickPush(channel.id)} key={channel.id}>
-                <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-                  <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 uppercase ">
-                    {getAcronyms(channel.name)}
+          {channels &&
+            channels.map((channel: any) => {
+              return (
+                <div onClick={() => onclickPush(channel.id)} key={channel.id}>
+                  <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
+                    <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 uppercase ">
+                      {getAcronyms(channel.name)}
+                    </div>
+                    <span className="font-medium text-sm text-white-light uppercase flex-1 ">
+                      {channel.name}
+                    </span>
                   </div>
-                  <span className="font-medium text-sm text-white-light uppercase flex-1 ">
-                    {channel.name}
-                  </span>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">

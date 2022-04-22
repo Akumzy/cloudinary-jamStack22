@@ -12,19 +12,35 @@ import {
 } from "../../components/icons/images";
 // import MobileMenuDrawer from "../../components/MobileMenuDrawer";
 import { UserComponent } from "../../components/Navigation";
-import { getChannelById } from "../../services/channels";
+import { getChannelById, getUserById } from "../../services/channels";
 import { Props } from "../user-profile";
+import useSWR from "swr";
 
 export default function ChatRoom({ user }: Props) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
+  const [channelDetail, setChannelDetail] = useState<any>();
+  const [creatorDetails, setCreatorDetails] = useState<any>();
   const router = useRouter();
   const { id } = router.query;
 
+  const getSingleUser = async (userID: string) => {
+    const { data, error } = await getUserById(userID);
+    if (error) {
+      return null;
+    }
+    setCreatorDetails(data);
+    return data;
+  };
   const loadChannelDetails = async () => {
     if (id) {
-      const channelDetails = await getChannelById(id as string);
-      console.log(channelDetails);
+      const { data: channelDetails, error } = await getChannelById(
+        id as string
+      );
+      if (channelDetails) {
+        getSingleUser(channelDetails.creatorId);
+        setChannelDetail(channelDetails);
+      }
     }
   };
   useEffect(() => {
@@ -61,14 +77,13 @@ export default function ChatRoom({ user }: Props) {
         </div>
         <div className="mt-[25px] mx-[27px] mb-4 h-[120px] ">
           <p className="w-fit uppercase text-lg font-bold text-white-light mb-2 ">
-            front-end Develpers
+            {channelDetail && channelDetail.name}
           </p>
           <p className="text-justify text-base font-normal text-white-light mb-2">
-            Pellentesque sagittis elit enim, sit amet ultrices tellus accumsan
-            quis.
+            {channelDetail && channelDetail.description}
           </p>
           <p className="text-sm text-blue-off-blue italic font-medium">
-            created by: <span>Felistus Obieze</span>
+            created by: <span>{creatorDetails?.name}</span>
           </p>
         </div>
 
@@ -76,68 +91,28 @@ export default function ChatRoom({ user }: Props) {
           <p className="font-bold text-lg text-white-light uppercase mb-6">
             members
           </p>
-          <div className="flex-1 overflow-y-auto">
-            <div className="flex items-center w-full space-x-6 mb-3">
-              <div className="w-10 h-10 border-2 rounded-lg">
-                <img
-                  src="/vercel.svg"
-                  alt="member image"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="w-fit text-blue-off-blue font-bold text-lg">
-                <p>Ezeugo Obieze</p>
-              </div>
-            </div>
-            <div className="flex items-center w-full space-x-6 mb-3">
-              <div className="w-10 h-10 border-2 rounded-lg">
-                <img
-                  src="/vercel.svg"
-                  alt="member image"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="w-fit text-blue-off-blue font-bold text-lg">
-                <p>Ezeugo Obieze</p>
-              </div>
-            </div>
-            <div className="flex items-center w-full space-x-6 mb-3">
-              <div className="w-10 h-10 border-2 rounded-lg">
-                <img
-                  src="/vercel.svg"
-                  alt="member image"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="w-fit text-blue-off-blue font-bold text-lg">
-                <p>Ezeugo Obieze</p>
-              </div>
-            </div>
-            <div className="flex items-center w-full space-x-6 mb-3">
-              <div className="w-10 h-10 border-2 rounded-lg">
-                <img
-                  src="/vercel.svg"
-                  alt="member image"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="w-fit text-blue-off-blue font-bold text-lg">
-                <p>Ezeugo Obieze</p>
-              </div>
-            </div>
-            <div className="flex items-center w-full space-x-6 mb-3">
-              <div className="w-10 h-10 border-2 rounded-lg">
-                <img
-                  src="/vercel.svg"
-                  alt="member image"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="w-fit text-blue-off-blue font-bold text-lg">
-                <p>Ezeugo Obieze</p>
-              </div>
-            </div>
-          </div>
+          {/* {channelDetail?.members &&
+            channelDetail.members.map(async (member: any) => {
+              const data: any = await getUserById(member.userId);
+              if (!data) return null;
+
+              return (
+                <div key={member.userId} className="flex-1 overflow-y-auto">
+                  <div className="flex items-center w-full space-x-6 mb-3">
+                    <div className="w-10 h-10 border-2 rounded-lg">
+                      <img
+                        src={data.image}
+                        alt="member image"
+                        className="w-full h-full"
+                      />
+                    </div>
+                    <div className="w-fit text-blue-off-blue font-bold text-lg">
+                      <p>{data.name}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })} */}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
@@ -176,7 +151,7 @@ export default function ChatRoom({ user }: Props) {
               <MenuIcon />
             </div>
             <div className="w-full h-[60px] px-[27px] py-[17px] uppercase font-bold text-lg text-white-light ">
-              front-end Develpers
+              {channelDetail && channelDetail.name}
             </div>
             {openMenu ? (
               <div
