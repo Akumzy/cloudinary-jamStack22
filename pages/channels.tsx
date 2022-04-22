@@ -1,4 +1,5 @@
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Editor from "../components/Editor";
 import {
@@ -11,27 +12,26 @@ import {
 import MobileMenuDrawer from "../components/MobileMenuDrawer";
 import { UserComponent } from "../components/Navigation";
 import NewChannel from "../components/NewChannel";
-import { listChannels } from "../services/channels";
 import { getAcronyms } from "../utils/utils";
 import { Props } from "./user-profile";
+import useSWR from "swr";
+import { listChannelsFetcher } from "../services/channels";
 
-export default function AppScreen({ user }: Props) {
+export default function Channels({ user }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
   const [channels, setChannels] = useState([]);
+  const router = useRouter();
+  const { data: listChannels } = useSWR("listChannels", listChannelsFetcher, {
+    refreshInterval: 2000,
+  });
 
-  const loadChannels = async () => {
-    const { data, error } = await listChannels();
-    if (error) {
-      console.error(error);
-      return;
-    }
-    setChannels(data);
-  };
   useEffect(() => {
-    loadChannels();
-  }, [channels]);
+    if (listChannels) {
+      setChannels(listChannels);
+    }
+  }, [listChannels]);
 
   function closeMenuModal() {
     setOpenModalMenu(false);
@@ -57,7 +57,9 @@ export default function AppScreen({ user }: Props) {
     closeMenuModal();
     setOpenMenu(false);
   }
-
+  function onclickPush(id: string) {
+    router.push(`/channels/${id}`);
+  }
   return (
     <div className="bg-white-offwhite min-h-screen h-full flex ">
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
@@ -81,7 +83,7 @@ export default function AppScreen({ user }: Props) {
           </div>
           {channels.map((channel: any) => {
             return (
-              <div key={channel.id}>
+              <div onClick={() => onclickPush(channel.id)} key={channel.id}>
                 <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
                   <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 uppercase ">
                     {getAcronyms(channel.name)}

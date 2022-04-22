@@ -1,40 +1,48 @@
-import { useEffect, useState } from "react"
-import { getProviders, getSession, signIn } from "next-auth/react"
-import { GoogleIcon, LogoIcon, LogoIconLight, MoonIcon, SunIconBright, SunIconDark } from "../components/icons/images"
-import { useRouter } from "next/router"
+import { useEffect, useState } from "react";
+import { getProviders, getSession, signIn } from "next-auth/react";
+import {
+  GoogleIcon,
+  LogoIcon,
+  LogoIconLight,
+  MoonIcon,
+  SunIconBright,
+  SunIconDark,
+} from "../components/icons/images";
+import { useRouter } from "next/router";
 
 export default function Login({ providers }: any) {
-  const [checked, setChecked] = useState<boolean>(true)
-  const [pageTheme, setPageTheme] = useState<string>("dark")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [checked, setChecked] = useState<boolean>(true);
+  const [pageTheme, setPageTheme] = useState<string>("dark");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   function signUserIn(provider: any) {
-    setIsLoading(() => !isLoading)
+    setIsLoading(() => !isLoading);
     signIn(provider.id, {
       callbackUrl: "http://localhost:3000/user-profile",
-    })
+    });
   }
   useEffect(() => {
     if (
       localStorage.theme === "dark" ||
-      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
     ) {
-      setChecked(true)
-      localStorage.setItem("theme", "dark")
+      setChecked(true);
+      localStorage.setItem("theme", "dark");
     } else {
-      setChecked(false)
-      setPageTheme("light")
-      localStorage.setItem("theme", "light")
+      setChecked(false);
+      setPageTheme("light");
+      localStorage.setItem("theme", "light");
     }
-  }, [])
+  }, []);
   function setTheme() {
     if (pageTheme === "dark") {
-      setPageTheme("light")
-      localStorage.setItem("theme", "light")
+      setPageTheme("light");
+      localStorage.setItem("theme", "light");
     } else {
-      setPageTheme("dark")
-      localStorage.setItem("theme", "dark")
+      setPageTheme("dark");
+      localStorage.setItem("theme", "dark");
     }
   }
   return (
@@ -43,7 +51,9 @@ export default function Login({ providers }: any) {
         <div className="px-[38px] py-[50px] w-full md:w-[380px] h-[400px] mx-auto rounded-3xl dark:bg-gray-800 bg-white border border-[#BDBDBD] ">
           <div className="flex items-center justify-center space-x-2 w-fit mb-7">
             {checked ? <LogoIconLight /> : <LogoIcon />}
-            <p className="text-lg font-bold dark:text-white text-[#282051]">Jam-Stack-Chat</p>
+            <p className="text-lg font-bold dark:text-white text-[#282051]">
+              Jam-Stack-Chat
+            </p>
           </div>
           <div className="w-[300px]  mb-[35px] dark:text-white">
             <p className="font text-lg font-medium leading-[25px] ">
@@ -59,10 +69,16 @@ export default function Login({ providers }: any) {
                 "flex justify-center items-center border-2 rounded-3xl px-4 py-1 hover:border-green-200 shadow-xl mx-auto "
               }
             >
-              <span className={`${isLoading ? "animate-pulse cursor-not-allowed" : ""}`}>
+              <span
+                className={`${
+                  isLoading ? "animate-pulse cursor-not-allowed" : ""
+                }`}
+              >
                 <GoogleIcon />
               </span>
-              <p className="text-lg font-medium dark:text-white">Sign in with {provider.name}</p>
+              <p className="text-lg font-medium dark:text-white">
+                Sign in with {provider.name}
+              </p>
             </button>
           ))}
 
@@ -88,8 +104,11 @@ export default function Login({ providers }: any) {
                   >
                     <div
                       className={
-                        `${!checked ? "translate-x-0 duration-200" : "bg-white translate-x-5 duration-200 "} ` +
-                        "w-4 h-4 bg-white rounded-full shadow"
+                        `${
+                          !checked
+                            ? "translate-x-0 duration-200"
+                            : "bg-white translate-x-5 duration-200 "
+                        } ` + "w-4 h-4 bg-white rounded-full shadow"
                       }
                     ></div>
                   </div>
@@ -101,24 +120,24 @@ export default function Login({ providers }: any) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export async function getServerSideProps(context: any) {
-  const providers = await getProviders()
-  const session = await getSession(context)
+  const providers = await getProviders();
+  const session = await getSession(context);
   if (session && session.user) {
     return {
       redirect: {
         permanent: false,
-        destination: "/chat-screen",
+        destination: "/user-profile",
       },
-    }
+    };
   }
 
   return {
     props: { providers },
-  }
+  };
 }
 
 // http://localhost:3000/login?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2FuserProfile&error=OAuthCallback
