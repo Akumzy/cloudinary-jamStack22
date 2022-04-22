@@ -110,7 +110,7 @@ export async function getServerSideProps(context: any) {
     return {
       redirect: {
         permanent: false,
-        destination: "/chat-screen",
+        destination: "/channels",
       },
     }
   }

@@ -27,6 +27,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<any>) 
         socket.broadcast.emit("update-input", msg)
       })
     })
+
+    io.use((socket, next) => {
+      const username = socket.handshake.auth.username
+      if (!username) {
+        return next(new Error("invalid username"))
+      }
+      //@ts-ignore
+      socket.username = username
+      next()
+    })
   }
 
   res.end()
