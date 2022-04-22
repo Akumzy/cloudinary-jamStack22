@@ -46,10 +46,10 @@ export const UserComponent = ({ image }: imageProp) => {
               </Link>
             </Menu.Item>
             <Menu.Item>
-              <Link href={"/chat-screen"}>
+              <Link href={"/channels"}>
                 <button className="group space-x-2 hover:bg-grey-light hover:bg-gray-400 font-normal text-gray-900 flex rounded-md items-center w-full px-2 py-2 text-base">
                   <GroupUserIcon />
-                  <span>Chat Room</span>
+                  <span>Channels</span>
                 </button>
               </Link>
             </Menu.Item>
