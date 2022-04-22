@@ -11,7 +11,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data | any>
 ) {
-  //if method not POST, return 405
+  //if method not GET, return 405
   if (req.method !== "GET") {
     return res.status(405).json({ message: "Method not Allowed" });
   }
