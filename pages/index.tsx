@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { socketInitializer } from "../utils/socket"
 import { getProviders, getSession, signIn } from "next-auth/react"
 import { GoogleIcon, LogoIcon, LogoIconLight, MoonIcon, SunIconBright, SunIconDark } from "../components/icons/images"
 import { useRouter } from "next/router"
@@ -16,6 +15,7 @@ export default function Login({ providers }: any) {
       callbackUrl: "http://localhost:3000/user-profile",
     })
   }
+
   useEffect(() => {
     if (
       localStorage.theme === "dark" ||

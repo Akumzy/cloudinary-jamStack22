@@ -18,16 +18,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<any>) 
     const io = new Server(res.socket?.server)
     //@ts-ignore
     res.socket?.server?.io = io
-
-    io.on("connection", (socket) => {
-      // socket.on('connected', (userId:string) => {
-      //    users[userId] = socket.id
-      // })
-      socket.on("input-change", (msg) => {
-        socket.broadcast.emit("update-input", msg)
-      })
-    })
-
     io.use((socket, next) => {
       const username = socket.handshake.auth.username
       if (!username) {
@@ -36,6 +26,26 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<any>) 
       //@ts-ignore
       socket.username = username
       next()
+    })
+
+    io.on("connection", (socket) => {
+      console.log("a user connected")
+      const users = []
+      //@ts-ignore
+      for (let [id, socket] of io.of("/").sockets) {
+        users.push({
+          userID: id,
+          username: socket.username,
+        })
+      }
+      console.log("users", users)
+      socket.emit("users", users)
+      // notify existing users
+      socket.broadcast.emit("user connected", {
+        userID: socket.id,
+        //@ts-ignore
+        username: socket.username,
+      })
     })
   }
 

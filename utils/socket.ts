@@ -3,15 +3,22 @@ import axios from "axios"
 
 let socket: any
 
-export const socketInitializer = async (): Promise<void> => {
+export const socketInitializer = async (username: string): Promise<void> => {
   await axios("/api/socket")
   socket = io()
 
-  socket.on("connect", () => {
+  onUsernameSelection(username)
+
+  socket?.onAny((event: any, ...args: any) => {
+    console.log(event, args)
+  })
+  socket?.on("connect", () => {
     console.log("connected")
   })
 
-  // onUsernameSelection(username)
+  socket.on("connect_error", (err: any) => {
+    console.error("connect_error", err)
+  })
 }
 
 export const onUsernameSelection = (username: string): void => {
@@ -19,9 +26,5 @@ export const onUsernameSelection = (username: string): void => {
   socket.auth = { username }
   socket.connect()
 }
-
-socket?.onAny((event: any, ...args: any) => {
-  console.log(event, args)
-})
 
 export default socket
