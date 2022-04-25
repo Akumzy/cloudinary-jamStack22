@@ -5,17 +5,16 @@ import { useEffect, useState } from "react"
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer"
 import Editor from "../../components/Editor"
 import { CloseMenuIcon, LeftArrowIcon, MenuIcon, SendIcon } from "../../components/icons/images"
-// import MobileMenuDrawer from "../../components/MobileMenuDrawer";
 import { UserComponent } from "../../components/Navigation"
 import { getChannelById, getUserById } from "../../services/channels"
 import { Props } from "../user-profile"
-import useSWR from "swr"
 
 export default function ChatRoom({ user }: Props) {
   const [openMenu, setOpenMenu] = useState(false)
   const [openModalMenu, setOpenModalMenu] = useState(false)
   const [channelDetail, setChannelDetail] = useState<any>()
   const [creatorDetails, setCreatorDetails] = useState<any>()
+  const [notMember, setNotMember] = useState<boolean>(true)
   const router = useRouter()
   const { id } = router.query
 
@@ -33,6 +32,12 @@ export default function ChatRoom({ user }: Props) {
       if (channelDetails) {
         getSingleUser(channelDetails.creatorId)
         setChannelDetail(channelDetails)
+
+        if (channelDetails.members.find((member: any) => member.userId === user.userId)) {
+          setNotMember(false)
+        } else {
+          setNotMember(true)
+        }
       }
     }
   }
@@ -80,30 +85,24 @@ export default function ChatRoom({ user }: Props) {
           </p>
         </div>
 
-        <div className="h-[calc(100vh-297px)] mx-[27px] flex flex-col">
+        <div className="h-[calc(100vh-282px)] mx-[27px] flex flex-col">
           <p className="font-bold text-lg text-white-light uppercase mb-6">members</p>
-          {/* {channelDetail?.members &&
-            channelDetail.members.map(async (member: any) => {
-              const data: any = await getUserById(member.userId);
-              if (!data) return null;
-
+          {channelDetail?.members &&
+            channelDetail.members.map((member: any) => {
               return (
                 <div key={member.userId} className="flex-1 overflow-y-auto">
-                  <div className="flex items-center w-full space-x-6 mb-3">
+                  <div className="flex items-center w-full space-x-4 mb-3">
                     <div className="w-10 h-10 border-2 rounded-lg">
-                      <img
-                        src={data.image}
-                        alt="member image"
-                        className="w-full h-full"
-                      />
+                      <img src={member.user.image} alt={`${member.user.name}'s image`} className="w-full h-full" />
                     </div>
-                    <div className="w-fit text-blue-off-blue font-bold text-lg">
-                      <p>{data.name}</p>
+                    <div className="w-fit text-blue-off-blue font-bold text-lg capitalize">
+                      <p>{member.user.name}</p>
                     </div>
+                    <div className={`${user ? "bg-green-800" : "bg-red-800"} ` + "rounded-full w-2 h-2"}></div>
                   </div>
                 </div>
-              );
-            })} */}
+              )
+            })}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
@@ -128,6 +127,9 @@ export default function ChatRoom({ user }: Props) {
           closeModal={closeMenuModal}
           name={user.name}
           image={user.image}
+          channelDetail={channelDetail}
+          creatorDetails={creatorDetails}
+          user={user}
         />
       ) : null}
 
@@ -141,23 +143,35 @@ export default function ChatRoom({ user }: Props) {
               {channelDetail && channelDetail.name}
             </div>
             {openMenu ? (
-              <div onClick={menuClose} className="cursor-pointer md:hidden block ">
+              <div onClick={menuClose} className="cursor-pointer md:hidden block hover:bg-[#0B090C] rounded-full ">
                 <CloseMenuIcon />
               </div>
             ) : null}
           </div>
-          <div className="px-[27px] py-10 bg-black flex-1 ">
+          <div className="px-[27px] py-10 bg-[#0B090C] flex-1 ">
             <div>sada</div>
           </div>
         </main>
 
         <footer className=" bg-[#312933] w-full px-[27px] py-4 min-h-[62px]  ">
-          <div className=" bg-purple-off-purple px-[17px] py-2  flex justify-between items-center rounded-lg">
-            <Editor />
-            <button className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white ">
-              <SendIcon />
-            </button>
-          </div>
+          {notMember ? (
+            <div className="bg-purple-off-purple text-white-light w-full px-[27px] py-4 min-h-[62px]">
+              <div className="flex ">
+                <p className="text-lg">
+                  You are currently not a member of this channel! Click
+                  <span className="underline text-blue-700 cursor-pointer font-bold mx-2 ">Join Channel</span>
+                  to join.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className=" bg-purple-off-purple px-[17px] py-2 flex justify-between items-center rounded-lg ">
+              <Editor />
+              <button className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white ">
+                <SendIcon />
+              </button>
+            </div>
+          )}
         </footer>
       </div>
     </div>
