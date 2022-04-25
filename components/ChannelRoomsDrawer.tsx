@@ -9,12 +9,18 @@ interface Props {
   closeModal: () => void;
   name: string;
   image: string;
+  channelDetail: any;
+  creatorDetails: any;
+  user: User;
 }
 export default function ChannelRoomsDrawer({
   isOpenModal,
   closeModal,
   name,
   image,
+  channelDetail,
+  creatorDetails,
+  user,
 }: Props) {
   return (
     <>
@@ -58,83 +64,46 @@ export default function ChannelRoomsDrawer({
                   </div>
                   <div className="mt-[25px] mx-[27px] mb-4 h-[120px] ">
                     <p className="w-fit uppercase text-lg font-bold text-white-light mb-2 ">
-                      front-end Develpers
+                      {channelDetail && channelDetail.name}
                     </p>
                     <p className="text-justify text-base font-normal text-white-light mb-2">
-                      Pellentesque sagittis elit enim, sit amet ultrices tellus
-                      accumsan quis.
+                      {channelDetail && channelDetail.description}
                     </p>
                     <p className="text-sm text-blue-off-blue italic font-medium">
-                      created by: <span>Felistus Obieze</span>
+                      created by: <span>{creatorDetails?.name}</span>
                     </p>
                   </div>
 
-                  <div className="h-[calc(100vh-297px)] mx-[27px] flex flex-col">
-                    <p className="font-bold text-lg text-white-light uppercase mb-6">
+                  <div className="h-[calc(100vh-282px)] mx-[27px] flex flex-col">
+                    <p className="font-bold text-left text-lg text-white-light uppercase mb-6">
                       members
                     </p>
-                    <div className="flex-1 overflow-y-auto">
-                      <div className="flex items-center w-full space-x-6 mb-3">
-                        <div className="w-10 h-10 border-2 rounded-lg">
-                          <img
-                            src="/vercel.svg"
-                            alt="member image"
-                            className="w-full h-full"
-                          />
+                    {channelDetail &&
+                      channelDetail.members.map((member: any) => (
+                        <div
+                          key={member.userId}
+                          className="flex-1 overflow-y-auto"
+                        >
+                          <div className="flex items-center w-full space-x-6 mb-3">
+                            <div className="w-10 h-10 border-2 rounded-lg">
+                              <img
+                                src={member.user.image}
+                                alt={`${member.user.name}'s image`}
+                                className="w-full h-full"
+                              />
+                            </div>
+                            <div className="w-fit text-blue-off-blue font-bold text-lg capitalize">
+                              <p>{member.user.name}</p>
+                            </div>
+                            <div
+                              className={
+                                `${user ? "bg-green-800" : "bg-red-800"} ` +
+                                "rounded-full w-2 h-2"
+                              }
+                            ></div>
+                          </div>
                         </div>
-                        <div className="w-fit text-blue-off-blue font-bold text-lg">
-                          <p>Ezeugo Obieze</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center w-full space-x-6 mb-3">
-                        <div className="w-10 h-10 border-2 rounded-lg">
-                          <img
-                            src="/vercel.svg"
-                            alt="member image"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="w-fit text-blue-off-blue font-bold text-lg">
-                          <p>Ezeugo Obieze</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center w-full space-x-6 mb-3">
-                        <div className="w-10 h-10 border-2 rounded-lg">
-                          <img
-                            src="/vercel.svg"
-                            alt="member image"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="w-fit text-blue-off-blue font-bold text-lg">
-                          <p>Ezeugo Obieze</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center w-full space-x-6 mb-3">
-                        <div className="w-10 h-10 border-2 rounded-lg">
-                          <img
-                            src="/vercel.svg"
-                            alt="member image"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="w-fit text-blue-off-blue font-bold text-lg">
-                          <p>Ezeugo Obieze</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center w-full space-x-6 mb-3">
-                        <div className="w-10 h-10 border-2 rounded-lg">
-                          <img
-                            src="/vercel.svg"
-                            alt="member image"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="w-fit text-blue-off-blue font-bold text-lg">
-                          <p>Ezeugo Obieze</p>
-                        </div>
-                      </div>
-                    </div>
+                      ))}
                   </div>
 
                   <div className="flex items-center  w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
