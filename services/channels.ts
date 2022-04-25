@@ -16,11 +16,44 @@ export const createChannel = async (value: {
   }
 };
 
-export const listChannels = async (): Promise<{ data: any; error: any }> => {
+// export const listChannels = async (): Promise<{ data: any; error: any }> => {
+//   try {
+//     const { data } = await axios.get("/api/channel/all");
+//     return { data, error: null };
+//   } catch (error: any) {
+//     return { data: null, error: error.response.data.message };
+//   }
+// };
+
+const listChannels = async () => {
   try {
     const { data } = await axios.get("/api/channel/all");
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+};
+export const listChannelsFetcher = () => listChannels();
+
+export const getChannelById = async (
+  id: string
+): Promise<{ data: any; error: any }> => {
+  try {
+    const { data } = await axios.get(`/api/channel/${id}`);
     return { data, error: null };
   } catch (error: any) {
     return { data: null, error: error.response.data.message };
   }
 };
+
+export const getUserById = async (
+  id: string
+): Promise<{ data: any; error: any }> => {
+  try {
+    const { data } = await axios.get(`/api/user/${id}`);
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error: error.response.data.message };
+  }
+};
+// export const getUserByIdFetcher = (id: string) => getUserById(id);

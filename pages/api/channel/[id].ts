@@ -20,7 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         id: id as string,
       },
       include: {
-        members: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
         messages: true,
       },
     })

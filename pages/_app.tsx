@@ -6,8 +6,15 @@ import { useEffect } from "react"
 import { socketInitializer } from "../utils/socket"
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  const user = session?.user
-  useEffect((): any => socketInitializer(user.id), [])
+  useEffect((): any => {
+    socketInitializer()
+    // const user = session?.user
+    // console.log("user", session)
+    // if (user) {
+    //   socketInitializer(user.id)
+    // }
+    // return
+  }, [session])
 
   return (
     <SessionProvider session={session}>

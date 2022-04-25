@@ -1,37 +1,51 @@
 import { getSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Editor from "../components/Editor";
+import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
+import Editor from "../../components/Editor";
 import {
   CloseMenuIcon,
+  LeftArrowIcon,
   MenuIcon,
-  PlusIcon,
-  SearchIcon,
   SendIcon,
-} from "../components/icons/images";
-import MobileMenuDrawer from "../components/MobileMenuDrawer";
-import { UserComponent } from "../components/Navigation";
-import NewChannel from "../components/NewChannel";
-import { getAcronyms } from "../utils/utils";
-import { Props } from "./user-profile";
+} from "../../components/icons/images";
+// import MobileMenuDrawer from "../../components/MobileMenuDrawer";
+import { UserComponent } from "../../components/Navigation";
+import { getChannelById, getUserById } from "../../services/channels";
+import { Props } from "../user-profile";
 import useSWR from "swr";
-import { listChannelsFetcher } from "../services/channels";
 
-export default function Channels({ user }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ChatRoom({ user }: Props) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
-  const [channels, setChannels] = useState([]);
+  const [channelDetail, setChannelDetail] = useState<any>();
+  const [creatorDetails, setCreatorDetails] = useState<any>();
   const router = useRouter();
-  const { data: listChannels } = useSWR("listChannels", listChannelsFetcher, {
-    refreshInterval: 2000,
-  });
+  const { id } = router.query;
 
-  useEffect(() => {
-    if (listChannels) {
-      setChannels(listChannels);
+  const getSingleUser = async (userID: string) => {
+    const { data, error } = await getUserById(userID);
+    if (error) {
+      return null;
     }
-  }, [listChannels]);
+    setCreatorDetails(data);
+    return data;
+  };
+  const loadChannelDetails = async () => {
+    if (id) {
+      const { data: channelDetails, error } = await getChannelById(
+        id as string
+      );
+      if (channelDetails) {
+        getSingleUser(channelDetails.creatorId);
+        setChannelDetail(channelDetails);
+      }
+    }
+  };
+  useEffect(() => {
+    loadChannelDetails();
+  }, [id]);
 
   function closeMenuModal() {
     setOpenModalMenu(false);
@@ -41,14 +55,6 @@ export default function Channels({ user }: Props) {
   function openMenuModal() {
     setOpenModalMenu(true);
   }
-
-  function openChannelModal() {
-    setIsOpen(true);
-    setOpenModalMenu(false);
-  }
-  function closeChannelModal() {
-    setIsOpen(false);
-  }
   function menuOpen() {
     openMenuModal();
     setOpenMenu(true);
@@ -57,45 +63,56 @@ export default function Channels({ user }: Props) {
     closeMenuModal();
     setOpenMenu(false);
   }
-  function onclickPush(id: string) {
-    router.push(`/channels/${id}`);
-  }
+
   return (
     <div className="bg-white-offwhite min-h-screen h-full flex ">
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
-        <div className="w-full h-[60px] px-[27px] flex py-[17px] boxShadow justify-between items-center ">
-          <span className="font-bold text-[18px] text-white-light">
-            Channels
-          </span>
-          <div onClick={openChannelModal} className="cursor-pointer">
-            <PlusIcon />
-          </div>
+        <div className="w-full h-[60px] px-[27px] py-[17px] boxShadow ">
+          <Link href="/channels">
+            <div className="flex items-center font-bold text-lg text-white-light cursor-pointer w-fit">
+              <LeftArrowIcon />
+              All Channels
+            </div>
+          </Link>
+        </div>
+        <div className="mt-[25px] mx-[27px] mb-4 h-[120px] ">
+          <p className="w-fit uppercase text-lg font-bold text-white-light mb-2 ">
+            {channelDetail && channelDetail.name}
+          </p>
+          <p className="text-justify text-base font-normal text-white-light mb-2">
+            {channelDetail && channelDetail.description}
+          </p>
+          <p className="text-sm text-blue-off-blue italic font-medium">
+            created by: <span>{creatorDetails?.name}</span>
+          </p>
         </div>
 
-        <div className="h-[calc(100vh-120px)] py-5">
-          <div className="mx-[27px] mb-9 flex items-center space-x-1 bg-purple-off-purple rounded-lg px-2 ">
-            <SearchIcon />
-            <input
-              type="search"
-              placeholder="Search"
-              className="w-full bg-inherit outline-none p-2 text-blue-off-blue "
-            />
-          </div>
-          {channels &&
-            channels.map((channel: any) => {
+        <div className="h-[calc(100vh-297px)] mx-[27px] flex flex-col">
+          <p className="font-bold text-lg text-white-light uppercase mb-6">
+            members
+          </p>
+          {/* {channelDetail?.members &&
+            channelDetail.members.map(async (member: any) => {
+              const data: any = await getUserById(member.userId);
+              if (!data) return null;
+
               return (
-                <div onClick={() => onclickPush(channel.id)} key={channel.id}>
-                  <div className="pl-[27px] mb-5 flex items-center cursor-pointer">
-                    <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 uppercase ">
-                      {getAcronyms(channel.name)}
+                <div key={member.userId} className="flex-1 overflow-y-auto">
+                  <div className="flex items-center w-full space-x-6 mb-3">
+                    <div className="w-10 h-10 border-2 rounded-lg">
+                      <img
+                        src={data.image}
+                        alt="member image"
+                        className="w-full h-full"
+                      />
                     </div>
-                    <span className="font-medium text-sm text-white-light uppercase flex-1 ">
-                      {channel.name}
-                    </span>
+                    <div className="w-fit text-blue-off-blue font-bold text-lg">
+                      <p>{data.name}</p>
+                    </div>
                   </div>
                 </div>
               );
-            })}
+            })} */}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
@@ -119,13 +136,11 @@ export default function Channels({ user }: Props) {
 
       {/* Mobile Menu */}
       {openMenu ? (
-        <MobileMenuDrawer
+        <ChannelRoomsDrawer
           isOpenModal={openModalMenu}
           closeModal={closeMenuModal}
-          openChannelModal={openChannelModal}
           name={user.name}
           image={user.image}
-          channels={channels}
         />
       ) : null}
 
@@ -135,8 +150,8 @@ export default function Channels({ user }: Props) {
             <div onClick={menuOpen} className="cursor-pointer md:hidden block">
               <MenuIcon />
             </div>
-            <div className="w-full h-[60px] px-[27px] py-[17px] uppercase font-bold text-[18px] text-white-light ">
-              Welcome to JamStack-Chat Hub
+            <div className="w-full h-[60px] px-[27px] py-[17px] uppercase font-bold text-lg text-white-light ">
+              {channelDetail && channelDetail.name}
             </div>
             {openMenu ? (
               <div
@@ -161,7 +176,6 @@ export default function Channels({ user }: Props) {
           </div>
         </footer>
       </div>
-      <NewChannel onClose={closeChannelModal} isOpen={isOpen} />
     </div>
   );
 }

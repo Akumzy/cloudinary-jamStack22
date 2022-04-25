@@ -3,7 +3,7 @@ import axios from "axios"
 
 let socket: any
 
-export const socketInitializer = async (username: string): Promise<void> => {
+export const socketInitializer = async (): Promise<void> => {
   await axios("/api/socket")
   socket = io()
 
@@ -11,7 +11,7 @@ export const socketInitializer = async (username: string): Promise<void> => {
     console.log("connected")
   })
 
-  onUsernameSelection(username)
+  // onUsernameSelection(username)
 }
 
 export const onUsernameSelection = (username: string): void => {

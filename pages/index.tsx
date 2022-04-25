@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { socketInitializer } from "../utils/socket"
 import { getProviders, getSession, signIn } from "next-auth/react"
 import { GoogleIcon, LogoIcon, LogoIconLight, MoonIcon, SunIconBright, SunIconDark } from "../components/icons/images"
 import { useRouter } from "next/router"
@@ -7,6 +8,7 @@ export default function Login({ providers }: any) {
   const [checked, setChecked] = useState<boolean>(true)
   const [pageTheme, setPageTheme] = useState<string>("dark")
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   function signUserIn(provider: any) {
     setIsLoading(() => !isLoading)
@@ -116,7 +118,7 @@ export async function getServerSideProps(context: any) {
   }
 
   return {
-    props: { providers },
+    props: { providers, session },
   }
 }
 
