@@ -1,76 +1,44 @@
-import { getSession, useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
-import Editor from "../../components/Editor";
-import {
-  CloseMenuIcon,
-  LeftArrowIcon,
-  MenuIcon,
-  SendIcon,
-} from "../../components/icons/images";
-import { UserComponent } from "../../components/Navigation";
-import { getChannelById, getUserById } from "../../services/channels";
+import { getSession, useSession } from "next-auth/react"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer"
+import Editor from "../../components/Editor"
+import { CloseMenuIcon, LeftArrowIcon, MenuIcon, SendIcon } from "../../components/icons/images"
+import { UserComponent } from "../../components/Navigation"
+import axios from "axios"
+import useSWR from "swr"
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data)
 
 export default function ChatRoom() {
-  const [openMenu, setOpenMenu] = useState(false);
-  const [openModalMenu, setOpenModalMenu] = useState(false);
-  const [channelDetail, setChannelDetail] = useState<any>();
-  const [creatorDetails, setCreatorDetails] = useState<any>();
-  const [notMember, setNotMember] = useState<boolean>(true);
-  const router = useRouter();
-  const { id } = router.query;
-  const { data, status } = useSession();
-
-  const getSingleUser = async (userID: string) => {
-    const { data, error } = await getUserById(userID);
-    if (error) {
-      return null;
-    }
-    setCreatorDetails(data);
-    return data;
-  };
-  const loadChannelDetails = async () => {
-    if (id) {
-      const { data: channelDetails, error } = await getChannelById(
-        id as string
-      );
-      if (channelDetails) {
-        getSingleUser(channelDetails.creatorId);
-        setChannelDetail(channelDetails);
-
-        if (
-          channelDetails.members.find(
-            (member: any) => member.userId === data?.user.userId
-          )
-        ) {
-          setNotMember(false);
-        } else {
-          setNotMember(true);
-        }
-      }
-    }
-  };
-  useEffect(() => {
-    loadChannelDetails();
-  }, [id]);
+  const [openMenu, setOpenMenu] = useState(false)
+  const [openModalMenu, setOpenModalMenu] = useState(false)
+  const router = useRouter()
+  const { id } = router.query
+  const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher)
+  const channelMembers = channelDetail?.members
+  const channelCreator = channelMembers
+    ? channelMembers.find((member: any) => member.userId === channelDetail.creatorId).user
+    : null
+  const [notMember, setNotMember] = useState<boolean>(true)
+  const { data, status } = useSession()
 
   function closeMenuModal() {
-    setOpenModalMenu(false);
-    setOpenMenu(false);
+    setOpenModalMenu(false)
+    setOpenMenu(false)
   }
 
   function openMenuModal() {
-    setOpenModalMenu(true);
+    setOpenModalMenu(true)
   }
   function menuOpen() {
-    openMenuModal();
-    setOpenMenu(true);
+    openMenuModal()
+    setOpenMenu(true)
   }
   function menuClose() {
-    closeMenuModal();
-    setOpenMenu(false);
+    closeMenuModal()
+    setOpenMenu(false)
   }
 
   return (
@@ -92,48 +60,33 @@ export default function ChatRoom() {
             {channelDetail && channelDetail.description}
           </p>
           <p className="text-sm text-blue-off-blue italic font-medium">
-            created by: <span>{creatorDetails?.name}</span>
+            created by: <span>{channelCreator?.name}</span>
           </p>
         </div>
         <div className="h-[calc(100vh-282px)] mx-[27px] flex flex-col">
-          <p className="font-bold text-lg text-white-light uppercase mb-6">
-            members
-          </p>
-          {channelDetail?.members &&
-            channelDetail.members.map((member: any) => {
+          <p className="font-bold text-lg text-white-light uppercase mb-6">members</p>
+          {channelMembers &&
+            channelMembers.map((member: any) => {
               return (
                 <div key={member.userId} className="flex-1 overflow-y-auto">
                   <div className="flex items-center w-full space-x-4 mb-3">
                     <div className="w-10 h-10 border-2 rounded-lg">
-                      <img
-                        src={member.user.image}
-                        alt={`${member.user.name}'s image`}
-                        className="w-full h-full"
-                      />
+                      <img src={member.user.image} alt={`${member.user.name}'s image`} className="w-full h-full" />
                     </div>
                     <div className="w-fit text-blue-off-blue font-bold text-lg capitalize">
                       <p>{member.user.name}</p>
                     </div>
-                    <div
-                      className={
-                        `${data?.user ? "bg-green-800" : "bg-red-800"} ` +
-                        "rounded-full w-2 h-2"
-                      }
-                    ></div>
+                    <div className={`${data?.user ? "bg-green-800" : "bg-red-800"} ` + "rounded-full w-2 h-2"}></div>
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
           <div className="flex items-center space-x-4">
             <div className="rounded-full w-8 h-8 overflow-hidden hidden md:block">
-              <img
-                src={data?.user.image}
-                className="w-full h-full block"
-                alt="user image"
-              />
+              <img src={data?.user.image} className="w-full h-full block" alt="user image" />
             </div>
             <p className="font-bold w-40 text-sm text-blue-off-blue hidden md:block uppercase truncate text-ellipsis ">
               {data?.user.name}
@@ -153,7 +106,7 @@ export default function ChatRoom() {
           name={data?.user.name}
           image={data?.user.image}
           channelDetail={channelDetail}
-          creatorDetails={creatorDetails}
+          creatorDetails={channelCreator}
           user={data?.user}
         />
       ) : null}
@@ -168,10 +121,7 @@ export default function ChatRoom() {
               {channelDetail && channelDetail.name}
             </div>
             {openMenu ? (
-              <div
-                onClick={menuClose}
-                className="cursor-pointer md:hidden block hover:bg-[#0B090C] rounded-full "
-              >
+              <div onClick={menuClose} className="cursor-pointer md:hidden block hover:bg-[#0B090C] rounded-full ">
                 <CloseMenuIcon />
               </div>
             ) : null}
@@ -211,9 +161,7 @@ export default function ChatRoom() {
               <div className="flex ">
                 <p className="text-lg">
                   You are currently not a member of this channel! Click
-                  <span className="underline text-blue-700 cursor-pointer font-bold mx-2 ">
-                    Join Channel
-                  </span>
+                  <span className="underline text-blue-700 cursor-pointer font-bold mx-2 ">Join Channel</span>
                   to join.
                 </p>
               </div>
@@ -229,5 +177,5 @@ export default function ChatRoom() {
         </footer>
       </div>
     </div>
-  );
+  )
 }

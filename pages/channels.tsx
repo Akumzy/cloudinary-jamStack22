@@ -1,34 +1,25 @@
-import { getSession, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import Editor from "../components/Editor";
-import {
-  CloseMenuIcon,
-  MenuIcon,
-  PlusIcon,
-  SearchIcon,
-  SendIcon,
-} from "../components/icons/images";
-import MobileMenuDrawer from "../components/MobileMenuDrawer";
-import { UserComponent } from "../components/Navigation";
-import NewChannel from "../components/NewChannel";
-import { getAcronyms } from "../utils/utils";
-import { Props } from "./user-profile";
-import useSWR from "swr";
-import { listChannelsFetcher } from "../services/channels";
-import socket, { socketInitializer } from "../utils/socket";
-import { useStore } from "../store/zustandProvider";
-import shallow from "zustand/shallow";
+import { getSession, useSession } from "next-auth/react"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import Editor from "../components/Editor"
+import { CloseMenuIcon, MenuIcon, PlusIcon, SearchIcon, SendIcon } from "../components/icons/images"
+import MobileMenuDrawer from "../components/MobileMenuDrawer"
+import { UserComponent } from "../components/Navigation"
+import NewChannel from "../components/NewChannel"
+import { getAcronyms } from "../utils/utils"
+import { Props } from "./user-profile"
+import useSWR from "swr"
+import { listChannelsFetcher } from "../services/channels"
 
 export default function Channels({ user }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
-  const [openModalMenu, setOpenModalMenu] = useState(false);
-  const [channels, setChannels] = useState([]);
-  const router = useRouter();
-  const { data: listChannels } = useSWR("listChannels", listChannelsFetcher);
-  const [users, setUsers] = useState<any[]>([]);
-  const { data, status } = useSession();
+  const [isOpen, setIsOpen] = useState(false)
+  const [openMenu, setOpenMenu] = useState(false)
+  const [openModalMenu, setOpenModalMenu] = useState(false)
+  const [channels, setChannels] = useState([])
+  const router = useRouter()
+  const { data: listChannels } = useSWR("listChannels", listChannelsFetcher)
+  const [users, setUsers] = useState<any[]>([])
+  const { data, status } = useSession()
 
   // useEffect((): any => {
   //   if (status === "authenticated") {
@@ -82,45 +73,48 @@ export default function Channels({ user }: Props) {
 
   useEffect(() => {
     if (listChannels) {
-      setChannels(listChannels);
+      setChannels(listChannels)
     }
-  }, [listChannels]);
+  }, [listChannels])
 
   function closeMenuModal() {
-    setOpenModalMenu(false);
-    setOpenMenu(false);
+    setOpenModalMenu(false)
+    setOpenMenu(false)
   }
 
   function openMenuModal() {
-    setOpenModalMenu(true);
+    setOpenModalMenu(true)
   }
 
   function openChannelModal() {
+<<<<<<< HEAD
     setIsOpen(true);
     setOpenModalMenu(false);
     setOpenMenu(false);
+=======
+    setIsOpen(true)
+    setOpenModalMenu(false)
+>>>>>>> 13273a91117cb236ab06977035cf30bb3b8af95c
   }
   function closeChannelModal() {
-    setIsOpen(false);
+    setIsOpen(false)
   }
   function menuOpen() {
-    openMenuModal();
-    setOpenMenu(true);
+    openMenuModal()
+    setOpenMenu(true)
   }
   function menuClose() {
-    closeMenuModal();
-    setOpenMenu(false);
+    closeMenuModal()
+    setOpenMenu(false)
   }
   function onclickPush(id: string) {
-    router.push(`/channels/${id}`);
+    router.push(`/channels/${id}`)
   }
   return (
     <div className="bg-white-offwhite min-h-screen h-full flex ">
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
         <div className="w-full h-[60px] px-[27px] flex py-[17px] boxShadow justify-between items-center ">
-          <span className="font-bold text-[18px] text-white-light">
-            Channels
-          </span>
+          <span className="font-bold text-[18px] text-white-light">Channels</span>
           <div onClick={openChannelModal} className="cursor-pointer">
             <PlusIcon />
           </div>
@@ -143,23 +137,17 @@ export default function Channels({ user }: Props) {
                     <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 uppercase ">
                       {getAcronyms(channel.name)}
                     </div>
-                    <span className="font-medium text-sm text-white-light uppercase flex-1 ">
-                      {channel.name}
-                    </span>
+                    <span className="font-medium text-sm text-white-light uppercase flex-1 ">{channel.name}</span>
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
           <div className="flex items-center space-x-4">
             <div className="rounded-full w-8 h-8 overflow-hidden hidden md:block">
-              <img
-                src={user.image}
-                className="w-full h-full block"
-                alt="user image"
-              />
+              <img src={user.image} className="w-full h-full block" alt="user image" />
             </div>
             <p className="font-bold w-40 text-sm text-blue-off-blue hidden md:block uppercase truncate text-ellipsis ">
               {user.name}
@@ -193,10 +181,7 @@ export default function Channels({ user }: Props) {
               JamStack-Chat Hub
             </div>
             {openMenu ? (
-              <div
-                onClick={menuClose}
-                className="cursor-pointer md:hidden block "
-              >
+              <div onClick={menuClose} className="cursor-pointer md:hidden block ">
                 <CloseMenuIcon />
               </div>
             ) : null}
@@ -229,22 +214,22 @@ export default function Channels({ user }: Props) {
       </div>
       <NewChannel onClose={closeChannelModal} isOpen={isOpen} />
     </div>
-  );
+  )
 }
 
 export async function getServerSideProps(ctx: any) {
-  const session = await getSession(ctx);
+  const session = await getSession(ctx)
   if (session && session.user) {
     return {
       props: {
         user: session.user,
       },
-    };
+    }
   }
   return {
     redirect: {
       permanent: false,
       destination: "/",
     },
-  };
+  }
 }

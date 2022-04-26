@@ -1,51 +1,46 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
-import { createChannel } from "../services/channels";
+import { Dialog, Transition } from "@headlessui/react"
+import { Fragment, useState } from "react"
+import { createChannel } from "../services/channels"
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 export default function NewChannel({ onClose, isOpen }: ModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  })
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { name, description } = formData;
-    if (!name || !description) return;
-    setIsLoading(true);
-    const { data, error } = await createChannel(formData);
+    e.preventDefault()
+    const { name, description } = formData
+    if (!name || !description) return
+    setIsLoading(true)
+    const { data, error } = await createChannel(formData)
     if (error) {
-      setIsLoading(false);
-      window.alert("something went wrong creating channel");
-      console.error(error);
-      return;
+      setIsLoading(false)
+      window.alert("something went wrong creating channel")
+      console.error(error)
+      return
     }
-    alert("channel created");
-    setIsLoading(false);
-    onClose();
-  };
+    console.log(data)
+    alert("channel created")
+    setIsLoading(false)
+    onClose()
+  }
 
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={onClose}
-        >
+        <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={onClose}>
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -60,10 +55,7 @@ export default function NewChannel({ onClose, isOpen }: ModalProps) {
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}
-            <span
-              className="inline-block h-screen align-middle"
-              aria-hidden="true"
-            >
+            <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
             <Transition.Child
@@ -80,10 +72,7 @@ export default function NewChannel({ onClose, isOpen }: ModalProps) {
                 onSubmit={handleFormSubmit}
                 className="inline-block w-full h-[360px] max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-[#120F13] shadow-xl rounded-2xl"
               >
-                <Dialog.Title
-                  as="h3"
-                  className="leading-6 text-[18px] font-bold text-[#F2F2F2] uppercase"
-                >
+                <Dialog.Title as="h3" className="leading-6 text-[18px] font-bold text-[#F2F2F2] uppercase">
                   New Channel
                 </Dialog.Title>
                 <div className="w-full my-[26px] ">
@@ -109,9 +98,7 @@ export default function NewChannel({ onClose, isOpen }: ModalProps) {
                 <div className="w-full flex justify-end">
                   <button
                     type="submit"
-                    disabled={
-                      isLoading || !formData.name || !formData.description
-                    }
+                    disabled={isLoading || !formData.name || !formData.description}
                     className="w-[100px] disabled:opacity-50 disabled:cursor-not-allowed h-10 inline-flex items-center justify-center px-4 py-2 text-[18px] font-medium text-[#F2F2F2] bg-[#2F80ED] border border-transparent rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                   >
                     Save
@@ -123,5 +110,5 @@ export default function NewChannel({ onClose, isOpen }: ModalProps) {
         </Dialog>
       </Transition>
     </>
-  );
+  )
 }
