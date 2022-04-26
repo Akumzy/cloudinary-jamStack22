@@ -177,6 +177,7 @@ export default function Channels({ user }: Props) {
           name={user.name}
           image={user.image}
           channels={channels}
+          onclickPush={onclickPush}
         />
       ) : null}
 

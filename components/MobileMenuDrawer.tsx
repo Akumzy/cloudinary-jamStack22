@@ -11,6 +11,7 @@ interface Props {
   image: string;
   openChannelModal: () => void;
   channels: Array<any>;
+  onclickPush: (id: string) => void;
 }
 export default function MobileMenuDrawer({
   isOpenModal,
@@ -19,6 +20,7 @@ export default function MobileMenuDrawer({
   name,
   image,
   channels,
+  onclickPush,
 }: Props) {
   return (
     <>
@@ -70,7 +72,10 @@ export default function MobileMenuDrawer({
                       />
                     </div>
                     {channels.map((channel: any) => (
-                      <div key={channel.id}>
+                      <div
+                        onClick={() => onclickPush(channel.id)}
+                        key={channel.id}
+                      >
                         <div className="pl-[27px] mb-5 flex items-center cursor-pointer uppercase">
                           <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
                             {getAcronyms(channel.name)}
