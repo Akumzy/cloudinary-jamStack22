@@ -7,11 +7,11 @@ import { UserComponent } from "./Navigation";
 interface Props {
   isOpenModal: boolean;
   closeModal: () => void;
-  name: string;
-  image: string;
+  name: any;
+  image: any;
   channelDetail: any;
   creatorDetails: any;
-  user: User;
+  user: any;
 }
 export default function ChannelRoomsDrawer({
   isOpenModal,
