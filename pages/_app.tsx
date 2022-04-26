@@ -42,6 +42,26 @@ export default function App({
     });
     socket?.on("connect", () => {
       console.log("connected");
+      const appUsers = [...users];
+      const connectedUser = appUsers.map((user) => {
+        if (user.self) {
+          user.connected = true;
+        }
+        return user;
+      });
+      setUsers([...connectedUser]);
+      console.log("connected Users", users);
+    });
+
+    socket.on("disconnect", () => {
+      const appUsers = [...users];
+      const disconnectedUser = appUsers.map((user) => {
+        if (user.self) {
+          user.connected = false;
+        }
+        return user;
+      });
+      setUsers([...disconnectedUser]);
     });
 
     socket?.on("connect_error", (err: any) => {
@@ -65,7 +85,7 @@ export default function App({
       console.log("users", users);
     });
 
-    socket?.on("user connected", (user: any) => {
+    socket?.on("user_connected", (user: any) => {
       const appUsers = [...users, user];
       const sortedUsers = appUsers.sort((a, b) => {
         if (a.self) return -1;
@@ -76,6 +96,13 @@ export default function App({
       setUsers([...sortedUsers]);
       console.log("user connected", users);
     });
+
+    socket.on(
+      "joined_channel",
+      ({ channelId, message }: { channelId: string; message: string }) => {
+        console.log("joined channel", channelId);
+      }
+    );
 
     if (socket) {
       console.log("socket", socket);
