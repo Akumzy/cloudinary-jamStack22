@@ -177,7 +177,31 @@ export default function ChatRoom() {
             ) : null}
           </div>
           <div className="px-[27px] py-10 bg-[#0B090C] flex-1 ">
-            <div>sada</div>
+            <div className="flex mb-9 space-x-[28px] ">
+              <div className="rounded-[7px] w-11 h-11 overflow-hidden hidden md:block">
+                <img
+                  src={data?.user.image}
+                  className="w-full h-full block"
+                  alt="user image"
+                />
+              </div>
+              <div className="flex-1">
+                <div className="flex space-x-4 text-blue-off-blue items-center">
+                  <span className="capitalize font-bold text-lg ">
+                    {data?.user.name}
+                  </span>
+                  <span className="font-medium text-sm">
+                    yesterday at 1:29PM
+                  </span>
+                </div>
+                <div>
+                  <p className="text-base font-medium text-white-light">
+                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                    Quae, et vero debitis nesciunt officia numquam?
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </main>
 

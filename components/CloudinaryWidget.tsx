@@ -16,6 +16,7 @@ class CloudinaryUploadWidget extends Component<MyProps> {
       (error: any, result: any) => {
         if (!error && result && result.event === "success") {
           const imgUrl = result.info.secure_url;
+          console.log("new IMGurl", imgUrl);
           axios
             .patch("/api/user/updatephoto", {
               image: imgUrl,

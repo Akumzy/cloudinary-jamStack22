@@ -98,6 +98,7 @@ export default function Channels({ user }: Props) {
   function openChannelModal() {
     setIsOpen(true);
     setOpenModalMenu(false);
+    setOpenMenu(false);
   }
   function closeChannelModal() {
     setIsOpen(false);
@@ -189,7 +190,7 @@ export default function Channels({ user }: Props) {
               <MenuIcon />
             </div>
             <div className="w-full h-[60px] px-[27px] py-[17px] uppercase font-bold text-[18px] text-white-light ">
-              Welcome to JamStack-Chat Hub
+              JamStack-Chat Hub
             </div>
             {openMenu ? (
               <div
@@ -200,19 +201,31 @@ export default function Channels({ user }: Props) {
               </div>
             ) : null}
           </div>
-          <div className="px-[27px] py-10 bg-black flex-1 ">
-            <div>sada</div>
+          <div className="px-[27px] py-10 bg-black flex-1 flex items-center ">
+            <div className="text-center">
+              <h2 className="font-bold text-2xl uppercase mb-5">
+                Welcome to JamStack-Chat-Hub
+              </h2>
+              <p className="text-lg ">
+                Kindly click on any Channel on the Sidebar to Join and Start
+                discussing with like minds!
+              </p>
+              <p className="text-xl uppercase my-5">
+                <em>Or...</em>
+              </p>
+              <p className="text-lg">
+                Looking to assembly a community of your own, Click on the plus
+                icon above to Create a Channel of your own!
+              </p>
+              <p>
+                <strong className="text-lg">
+                  All Channels must have descriptive Description...
+                </strong>
+              </p>
+              <p className="animate-pulse text-4xl my-11">Salut...!</p>
+            </div>
           </div>
         </main>
-
-        <footer className=" bg-[#312933] w-full px-[27px] py-4 min-h-[62px]  ">
-          <div className=" bg-purple-off-purple px-[17px] py-2  flex justify-between items-center rounded-lg">
-            <Editor />
-            <button className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white ">
-              <SendIcon />
-            </button>
-          </div>
-        </footer>
       </div>
       <NewChannel onClose={closeChannelModal} isOpen={isOpen} />
     </div>
