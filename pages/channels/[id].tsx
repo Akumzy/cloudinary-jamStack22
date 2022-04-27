@@ -18,42 +18,52 @@ import { useStore } from "../../store/appStore";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
-export default function ChatRoom() {
+export default function ChatRoom({ user }: any) {
   const { mutate } = useSWRConfig();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
-  const [openModalMenu, setOpenModalMenu] = useState<boolean>(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openModalMenu, setOpenModalMenu] = useState(false);
   const router = useRouter();
   const { id } = router.query;
   const socket = useStore((state: any) => state.socket);
   const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher);
-  const channelMembers = channelDetail?.members;
+  const channelMembers = useMemo(() => channelDetail?.members, [channelDetail]);
   const channelCreator = useMemo(() => {
     return channelMembers
       ? channelMembers.find(
           (member: any) => member.userId === channelDetail.creatorId
         ).user
       : null;
-  }, [channelMembers]);
-  const { data, status } = useSession();
-  const user = data?.user;
+  }, [channelDetail]);
+
   const isChannelMember = useMemo(
     () => channelMembers?.some((member: any) => member.userId === user?.userId),
-    [channelMembers]
+    [channelDetail]
   );
   function closeMenuModal() {
     setOpenModalMenu(false);
     setOpenMenu(false);
   }
+  console.log("channelDetail", channelDetail);
+  console.log("channelmembers", channelMembers);
 
   useEffect(() => {
     if (socket) {
       console.log("new socket2", socket.connected);
-      socket?.on("joined_channel", ({ channelId, user, message }: any) => {
-        console.log("joined_channel", channelId, user, message);
+      socket?.on("new_member", ({ newChannelMember, channelId }: any) => {
+        // console.log("channel info", channel)
+        if (channelId === channelDetail?.id) {
+          console.log("joined channel", newChannelMember);
+          const newchannel = {
+            ...channelDetail,
+            members: [...channelDetail.members, newChannelMember],
+          };
+          const options = { optimisticData: newchannel, rollbackOnError: true };
+          mutate(`/api/channel/${id}`, newchannel, options);
+        }
       });
     }
-  }, [socket]);
+  }, []);
 
   function openMenuModal() {
     setOpenModalMenu(true);
@@ -69,24 +79,31 @@ export default function ChatRoom() {
 
   function handleJoinChannel() {
     setIsLoading(true);
-    console.log("new socket2", socket.connected);
-
     console.log("join channel");
     socket?.emit(
       "join_channel",
       { channelId: id, userId: user?.userId },
-      (error: any, channel: any) => {
+      (error: any, channelMember: any) => {
         if (error) {
-          setIsLoading(false);
           console.error("error joining channel", error);
-        } else {
           setIsLoading(false);
-          console.log("joined channel", channel);
-          console.log("joined", channelDetail);
+        } else {
+          console.log("joined channel", channelMember);
+          if (channelMember.chatRoomId === channelDetail?.id) {
+            const newchannel = {
+              ...channelDetail,
+              members: [...channelDetail.members, channelMember],
+            };
+            const options = {
+              optimisticData: newchannel,
+              rollbackOnError: true,
+            };
+            mutate(`/api/channel/${id}`, newchannel, options);
+            setIsLoading(false);
+          }
         }
       }
     );
-    mutate(`/api/channel/${id}`);
     console.log("channelDetail", channelDetail);
   }
 

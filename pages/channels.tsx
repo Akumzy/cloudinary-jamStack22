@@ -1,87 +1,45 @@
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Editor from "../components/Editor";
 import {
   CloseMenuIcon,
   MenuIcon,
   PlusIcon,
   SearchIcon,
-  SendIcon,
 } from "../components/icons/images";
 import MobileMenuDrawer from "../components/MobileMenuDrawer";
 import { UserComponent } from "../components/Navigation";
 import NewChannel from "../components/NewChannel";
 import { getAcronyms } from "../utils/utils";
 import { Props } from "./user-profile";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { listChannelsFetcher } from "../services/channels";
+import { useStore } from "../store/appStore";
+
+const updateFn = async (channel: any) => {
+  const { data, error } = await listChannelsFetcher();
+  if (error) console.error(error);
+  return data;
+};
 
 export default function Channels({ user }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
-  const [channels, setChannels] = useState([]);
+  const socket = useStore((state: any) => state.socket);
   const router = useRouter();
-  const { data: listChannels } = useSWR("listChannels", listChannelsFetcher);
-  const [users, setUsers] = useState<any[]>([]);
-  const { data, status } = useSession();
-
-  // useEffect((): any => {
-  //   if (status === "authenticated") {
-  //     console.log("user", data)
-  //     socketInitializer(data.user.userId)
-
-  //     socket?.on("users", (users: any[]) => {
-  //       users.forEach((user) => {
-  //         user.self = user.userID === socket.id
-  //         console.log("user socket", user)
-  //       })
-  //       // put the current user first, and then sort by username
-  //       users = users.sort((a, b) => {
-  //         if (a.self) return -1
-  //         if (b.self) return 1
-  //         if (a.username < b.username) return -1
-  //         return a.username > b.username ? 1 : 0
-  //       })
-  //       setUsers(users)
-  //       console.log("users", users)
-  //     })
-
-  //     socket?.on("user connected", (user: any) => {
-  //       // this.users.push(user)
-  //       const appUsers = [...users, user]
-  //       const sortedUsers = appUsers.sort((a, b) => {
-  //         if (a.self) return -1
-  //         if (b.self) return 1
-  //         if (a.username < b.username) return -1
-  //         return a.username > b.username ? 1 : 0
-  //       })
-  //       setUsers([...sortedUsers])
-  //       console.log("user connected", user)
-  //     })
-  //   }
-  //   if (socket) {
-  //     console.log("socket", socket)
-  //   }
-  //   return () => {
-  //     socket?.off("connect_error")
-  //     socket?.disconnect()
-  //   }
-  // }, [data, socket])
-  // const initialState = useStore(
-  //   (store: { initialState: any }) => ({
-  //     initialState: store.initialState,
-  //   }),
-  //   shallow
-  // );
-  // console.log("initial: ", initialState);
+  const { data: channels } = useSWR("listChannels", listChannelsFetcher);
 
   useEffect(() => {
-    if (listChannels) {
-      setChannels(listChannels);
+    if (socket) {
+      socket.on("channelCreated", (channel: any) => {
+        console.log("channelCreated", channel);
+        const newchannel = [...(channels || []), channel];
+        const options = { optimisticData: newchannel, rollbackOnError: true };
+        mutate("listChannels", newchannel, options);
+      });
     }
-  }, [listChannels]);
+  }, []);
 
   function closeMenuModal() {
     setOpenModalMenu(false);

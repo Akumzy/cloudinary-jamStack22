@@ -1,204 +1,90 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest } from "next";
+import { Server as ServerIO } from "Socket.IO";
+import { Server as NetServer } from "http";
 import { getSession } from "next-auth/react";
-import { Server } from "Socket.IO";
 import prisma from "../../lib/prisma";
+import { NextApiResponseServerIO } from "../../types/socket";
 
-type Data = {
-  name: string;
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
 
-let users: string[] = [];
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<any>
-) {
+export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
   const session = await getSession({ req });
-  console.log("first session", session?.user.userId);
-  //@ts-ignore
-  if (res.socket?.server?.io) {
-    console.log("Socket is already running");
-  } else {
-    console.log("Socket is initializing");
-    //@ts-ignore
-    const io = new Server(res.socket?.server);
-
-    //@ts-ignore
-    res.socket?.server?.io = io;
-
+  console.log("user logged in", session?.user.email);
+  if (!session || !session.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const user = session.user;
+  if (!res.socket.server.io) {
+    console.log("New Socket.io server...");
+    // adapt Next's net Server to http Server
+    const httpServer: NetServer = res.socket.server as any;
+    const io = new ServerIO(httpServer);
     io.on("connection", async (socket) => {
-      if (!session || !session.user) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
+      socket.on("set_active", async (data: Active, ack: Function) => {
+        console.log("data", data);
+        console.log("user join", data.user.email);
+        try {
+          const userChannels = await prisma.chatRoom.findMany({
+            where: {
+              members: {
+                some: {
+                  user: {
+                    id: data.user.userId,
+                  },
+                },
+              },
+            },
+          });
+          const userChannelsIds = userChannels.map((channel) => channel.id);
+          userChannelsIds.forEach((channelId) => {
+            socket.join(channelId);
+            socket.broadcast.to(channelId).emit("active", data.user);
+          });
+          ack(null, userChannelsIds);
+        } catch (error) {
+          ack("something went wrong");
+        }
+      });
 
-      const user = session.user;
-      console.log(user.userId);
-      const userChannels = await prisma.chatRoom.findMany({
-        where: {
-          members: {
-            some: {
+      socket.on("join_channel", async (data: JoinChannel, ack: Function) => {
+        console.log("joing channel");
+        try {
+          const newChannelMember = await prisma.chatRoomMember.create({
+            data: {
               user: {
-                id: user.userId,
-              },
-            },
-          },
-        },
-      });
-      console.log("userChannels", userChannels);
-      //get users chatroom id
-      const userChannelsIds = userChannels.map((channel) => channel.id);
-      userChannelsIds.forEach((channelId) => {
-        socket.join(channelId);
-      });
-
-      socket.on(
-        "join_channel",
-        async ({ channelId, userId }: any, ack: Function) => {
-          try {
-            console.log("join_channel", channelId);
-            console.log("userId", userId);
-            //ensure user is not already in channel
-            // if (userChannelsIds.includes(channelId)) {
-            //   console.log("Already in channel")
-            //   throw new Error("Already in channel")
-            // }
-            // const channel = await prisma.chatRoom.findUnique({
-            //   where: {
-            //     id: channelId,
-            //   },
-            // })
-            // console.log("channelbyid", channel)
-
-            //add new channel memebr to db
-            // await prisma.chatRoom.update({
-            //   where: {
-            //     id: channelId,
-            //   },
-            //   data: {
-            //     members: {
-            //       connect: {
-            //         user: {
-            //           id: userId,
-            //         },
-            //       },
-            //     },
-            //   },
-            // })
-
-            // const channel = await prisma.chatRoom.update({
-            //   where: { id: channelId },
-            //   data: {
-            //     members: {
-            //       create: [
-            //         {
-            //           user: {
-            //             connect: {
-            //               id: userId,
-            //             },
-            //           },
-            //           chatRoom: {
-            //             connect: {
-            //               id: channelId,
-            //             },
-            //           },
-            //         },
-            //       ],
-            //     },
-            //   },
-            // })
-            const channel = await prisma.chatRoomMember.create({
-              data: {
-                user: {
-                  connect: {
-                    id: userId,
-                  },
-                },
-                chatRoom: {
-                  connect: {
-                    id: channelId,
-                  },
+                connect: {
+                  id: data.userId,
                 },
               },
-            });
-
-            if (channel) {
-              socket.join(channelId);
-              socket.to(channelId).emit("joined_channel", {
-                channelId,
-                user: user,
-                message: `${user.name} joined the channel`,
-              });
-            }
-            ack(null, channel);
-          } catch (error) {
-            console.log(error);
-            console.log("user channels", userChannelsIds);
-            console.log("join_channel", channelId);
-            ack("Unable to join channel");
-          }
-        }
-      );
-
-      socket.on("new_channel_message", async (data: Message) => {
-        const channel = await prisma.chatRoom.update({
-          where: { id: data.roomId },
-          data: {
-            messages: {
-              create: {
-                text: data.text,
-                isDefault: data.isDefault,
-                user: {
-                  connect: {
-                    id: user.userId,
-                  },
+              chatRoom: {
+                connect: {
+                  id: data.channelId,
                 },
               },
             },
-          },
-        });
-
-        if (channel) {
-          socket.broadcast.to(data.roomId).emit("channel_message", {
-            data,
+            include: {
+              user: true,
+            },
           });
-        }
-      });
-
-      socket.on("create_channel", async (data: ChatRoom) => {
-        const channel = await prisma.chatRoom.create({
-          data: {
-            name: data.name,
-            description: data.description,
-            creatorId: user.userId,
-            members: {
-              create: {
-                user: {
-                  connect: {
-                    id: user.userId,
-                  },
-                },
-              },
-            },
-          },
-        });
-
-        if (channel) {
-          socket.broadcast.emit("new_channel", {
-            data,
+          socket.join(data.channelId);
+          socket.broadcast.to(data.channelId).emit("new_member", {
+            newChannelMember,
+            channelId: data.channelId,
           });
+          ack(null, newChannelMember);
+        } catch (error) {
+          console.error(error);
+          ack("something went wrong");
         }
-      });
-
-      // console.log("users", users)
-      // socket.emit("users", users)
-      // notify existing users
-      socket.broadcast.emit("user_connected", {
-        userID: socket.id,
-        user: user.email,
       });
     });
+
+    // append SocketIO server to Next.js socket server response
+    res.socket.server.io = io;
   }
-  //@ts-ignore
   res.end();
-}
+};
