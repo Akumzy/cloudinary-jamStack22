@@ -368,10 +368,13 @@ export default function ChatRoom({ user }: any) {
         </main>
 
         <footer className=" bg-[#312933] w-full px-[27px] py-4 min-h-[62px]  ">
-          {!isChannelMember ? (
+          {isChannelMember ? (
             <div className="bg-purple-off-purple text-white-light w-full px-[27px] py-4 min-h-[62px]">
-              <div className="text-lg  flex items-center">
-                <p> You are currently not a member of this channel! Click</p>
+              <div className="text-lg justify-center flex items-center">
+                <p className="hidden lg:flex">
+                  {" "}
+                  You are currently not a member of this channel! Click
+                </p>
                 {isLoading ? (
                   <div className=" w-fit h-fit mx-2">
                     <Spinner />
@@ -379,12 +382,12 @@ export default function ChatRoom({ user }: any) {
                 ) : (
                   <span
                     onClick={handleJoinChannel}
-                    className="underline text-blue-700 cursor-pointer font-bold mx-2 "
+                    className=" underline text-blue-700 cursor-pointer font-bold mx-2 "
                   >
                     Join Channel
                   </span>
                 )}
-                <p>to join.</p>
+                <p className="hidden lg:flex">to join.</p>
               </div>
             </div>
           ) : (
