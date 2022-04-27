@@ -2,12 +2,13 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/react"
 import prisma from "../../../lib/prisma"
+import { NextApiResponseServerIO } from "../../../types/socket"
 
 type Data = {
   message: string
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data | any>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
   //if method not POST, return 405
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not Allowed" })
@@ -61,7 +62,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       },
     })
 
-    res.status(200).json(chatRoom)
+    res.socket?.server?.io.on("connection", async (socket) => {
+      socket.broadcast.emit("channelCreated", chatRoom)
+      socket.join(chatRoom.id)
+    })
+    // res?.socket?.server?.io?.emit("channelCreated", chatRoom)
+
+    return res.status(200).json(chatRoom)
 
     // return res.status(200).json(updatedUser)
   } catch (error) {

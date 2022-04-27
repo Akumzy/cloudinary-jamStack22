@@ -1,3 +1,11 @@
+interface Active {
+  user: User
+}
+interface JoinChannel {
+  userId: string
+  channelId: string
+}
+
 interface User {
   name: string
   email: string

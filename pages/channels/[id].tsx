@@ -1,88 +1,83 @@
-import { getSession, useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
-import Editor from "../../components/Editor";
-import {
-  CloseMenuIcon,
-  LeftArrowIcon,
-  MenuIcon,
-  SendIcon,
-} from "../../components/icons/images";
-import { UserComponent } from "../../components/Navigation";
-import axios from "axios";
-import useSWR, { useSWRConfig } from "swr";
-import { useStore } from "../../store/appStore";
+import { getSession, useSession } from "next-auth/react"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import { useEffect, useMemo, useState } from "react"
+import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer"
+import Editor from "../../components/Editor"
+import { CloseMenuIcon, LeftArrowIcon, MenuIcon, SendIcon } from "../../components/icons/images"
+import { UserComponent } from "../../components/Navigation"
+import axios from "axios"
+import useSWR, { useSWRConfig } from "swr"
+import { useStore } from "../../store/appStore"
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+const fetcher = (url: string) => axios.get(url).then((res) => res.data)
 
-export default function ChatRoom() {
-  const { mutate } = useSWRConfig();
-  const [openMenu, setOpenMenu] = useState(false);
-  const [openModalMenu, setOpenModalMenu] = useState(false);
-  const router = useRouter();
-  const { id } = router.query;
-  const socket = useStore((state: any) => state.socket);
-  const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher);
-  const channelMembers = channelDetail?.members;
+export default function ChatRoom({ user }: any) {
+  const { mutate } = useSWRConfig()
+  const [openMenu, setOpenMenu] = useState(false)
+  const [openModalMenu, setOpenModalMenu] = useState(false)
+  const router = useRouter()
+  const { id } = router.query
+  const socket = useStore((state: any) => state.socket)
+  const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher)
+  const channelMembers = useMemo(() => channelDetail?.members, [channelDetail])
   const channelCreator = useMemo(() => {
-    return channelMembers
-      ? channelMembers.find(
-          (member: any) => member.userId === channelDetail.creatorId
-        ).user
-      : null;
-  }, [channelMembers]);
-  const { data, status } = useSession();
-  const user = data?.user;
+    return channelMembers ? channelMembers.find((member: any) => member.userId === channelDetail.creatorId).user : null
+  }, [channelDetail])
+
   const isChannelMember = useMemo(
     () => channelMembers?.some((member: any) => member.userId === user?.userId),
-    [channelMembers]
-  );
+    [channelDetail],
+  )
   function closeMenuModal() {
-    setOpenModalMenu(false);
-    setOpenMenu(false);
+    setOpenModalMenu(false)
+    setOpenMenu(false)
   }
+  console.log("channelDetail", channelDetail)
+  console.log("channelmembers", channelMembers)
 
   useEffect(() => {
     if (socket) {
-      console.log("new socket2", socket.connected);
-      socket?.on("joined_channel", ({ channelId, user, message }: any) => {
-        console.log("joined_channel", channelId, user, message);
-      });
+      console.log("new socket2", socket.connected)
+      socket?.on("new_member", ({ newChannelMember, channelId }: any) => {
+        // console.log("channel info", channel)
+        if (channelId === channelDetail?.id) {
+          console.log("joined channel", newChannelMember)
+          const newchannel = { ...channelDetail, members: [...channelDetail.members, newChannelMember] }
+          const options = { optimisticData: newchannel, rollbackOnError: true }
+          mutate(`/api/channel/${id}`, newchannel, options)
+        }
+      })
     }
-  }, [socket]);
+  }, [])
 
   function openMenuModal() {
-    setOpenModalMenu(true);
+    setOpenModalMenu(true)
   }
   function menuOpen() {
-    openMenuModal();
-    setOpenMenu(true);
+    openMenuModal()
+    setOpenMenu(true)
   }
   function menuClose() {
-    closeMenuModal();
-    setOpenMenu(false);
+    closeMenuModal()
+    setOpenMenu(false)
   }
 
   function handleJoinChannel() {
-    console.log("new socket2", socket.connected);
-
-    console.log("join channel");
-    socket?.emit(
-      "join_channel",
-      { channelId: id, userId: user?.userId },
-      (error: any, channel: any) => {
-        if (error) {
-          console.error("error joining channel", error);
-        } else {
-          console.log("joined channel", channel);
-          console.log("joined", channelDetail);
+    console.log("join channel")
+    socket?.emit("join_channel", { channelId: id, userId: user?.userId }, (error: any, channelMember: any) => {
+      if (error) {
+        console.error("error joining channel", error)
+      } else {
+        console.log("joined channel", channelMember)
+        if (channelMember.chatRoomId === channelDetail?.id) {
+          const newchannel = { ...channelDetail, members: [...channelDetail.members, channelMember] }
+          const options = { optimisticData: newchannel, rollbackOnError: true }
+          mutate(`/api/channel/${id}`, newchannel, options)
         }
       }
-    );
-    mutate(`/api/channel/${id}`);
-    console.log("channelDetail", channelDetail);
+    })
+    console.log("channelDetail", channelDetail)
   }
 
   return (
@@ -108,44 +103,29 @@ export default function ChatRoom() {
           </p>
         </div>
         <div className="h-[calc(100vh-282px)] mx-[27px] flex flex-col">
-          <p className="font-bold text-lg text-white-light uppercase mb-6">
-            members
-          </p>
+          <p className="font-bold text-lg text-white-light uppercase mb-6">members</p>
           {channelMembers &&
             channelMembers.map((member: any) => {
               return (
                 <div key={member.userId} className="flex-1 overflow-y-auto">
                   <div className="flex items-center w-full space-x-4 mb-3">
                     <div className="w-10 h-10 border-2 rounded-lg">
-                      <img
-                        src={member.user.image}
-                        alt={`${member.user.name}'s image`}
-                        className="w-full h-full"
-                      />
+                      <img src={member.user.image} alt={`${member.user.name}'s image`} className="w-full h-full" />
                     </div>
                     <div className="w-fit text-blue-off-blue font-bold text-lg capitalize">
                       <p>{member.user.name}</p>
                     </div>
-                    <div
-                      className={
-                        `${user ? "bg-green-800" : "bg-red-800"} ` +
-                        "rounded-full w-2 h-2"
-                      }
-                    ></div>
+                    <div className={`${user ? "bg-green-800" : "bg-red-800"} ` + "rounded-full w-2 h-2"}></div>
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
 
         <div className="flex items-center w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">
           <div className="flex items-center space-x-4">
             <div className="rounded-full w-8 h-8 overflow-hidden hidden md:block">
-              <img
-                src={user?.image}
-                className="w-full h-full block"
-                alt="user image"
-              />
+              <img src={user?.image} className="w-full h-full block" alt="user image" />
             </div>
             <p className="font-bold w-40 text-sm text-blue-off-blue hidden md:block uppercase truncate text-ellipsis ">
               {user?.name}
@@ -180,10 +160,7 @@ export default function ChatRoom() {
               {channelDetail && channelDetail.name}
             </div>
             {openMenu ? (
-              <div
-                onClick={menuClose}
-                className="cursor-pointer md:hidden block hover:bg-[#0B090C] rounded-full "
-              >
+              <div onClick={menuClose} className="cursor-pointer md:hidden block hover:bg-[#0B090C] rounded-full ">
                 <CloseMenuIcon />
               </div>
             ) : null}
@@ -191,25 +168,17 @@ export default function ChatRoom() {
           <div className="px-[27px] py-10 bg-[#0B090C] flex-1 ">
             <div className="flex mb-9 space-x-[28px] ">
               <div className="rounded-[7px] w-11 h-11 overflow-hidden hidden md:block">
-                <img
-                  src={user?.image}
-                  className="w-full h-full block"
-                  alt="user image"
-                />
+                <img src={user?.image} className="w-full h-full block" alt="user image" />
               </div>
               <div className="flex-1">
                 <div className="flex space-x-4 text-blue-off-blue items-center">
-                  <span className="capitalize font-bold text-lg ">
-                    {user?.name}
-                  </span>
-                  <span className="font-medium text-sm">
-                    yesterday at 1:29PM
-                  </span>
+                  <span className="capitalize font-bold text-lg ">{user?.name}</span>
+                  <span className="font-medium text-sm">yesterday at 1:29PM</span>
                 </div>
                 <div>
                   <p className="text-base font-medium text-white-light">
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                    Quae, et vero debitis nesciunt officia numquam?
+                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae, et vero debitis nesciunt officia
+                    numquam?
                   </p>
                 </div>
               </div>
@@ -223,10 +192,7 @@ export default function ChatRoom() {
               <div className="flex ">
                 <p className="text-lg">
                   You are currently not a member of this channel! Click
-                  <span
-                    onClick={handleJoinChannel}
-                    className="underline text-blue-700 cursor-pointer font-bold mx-2 "
-                  >
+                  <span onClick={handleJoinChannel} className="underline text-blue-700 cursor-pointer font-bold mx-2 ">
                     Join Channel
                   </span>
                   to join.
@@ -244,22 +210,22 @@ export default function ChatRoom() {
         </footer>
       </div>
     </div>
-  );
+  )
 }
 
 export async function getServerSideProps(ctx: any) {
-  const session = await getSession(ctx);
+  const session = await getSession(ctx)
   if (session && session.user) {
     return {
       props: {
         user: session.user,
       },
-    };
+    }
   }
   return {
     redirect: {
       permanent: false,
       destination: "/",
     },
-  };
+  }
 }

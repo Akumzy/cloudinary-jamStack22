@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useStore } from "../store/appStore"
 import axios from "axios"
 import io from "Socket.IO-client"
+import { isActive } from "@tiptap/core"
 
 let newsocket: any
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -18,6 +19,13 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     console.log("socket", socket)
     socket?.on("connect", () => {
       console.log("connected")
+      socket?.emit("set_active", { user: pageProps.user }, (error: any, data: any) => {
+        if (error) {
+          console.error("unable to join", error)
+        } else {
+          console.log("joined", data)
+        }
+      })
     })
 
     socket.on("disconnect", () => {
@@ -54,10 +62,14 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   useEffect((): any => {
     if (pageProps.user) {
       if (!socket) {
-        axios("/api/socket").then((res) => {
-          newsocket = io()
-          setSocket(newsocket)
-        })
+        axios("/api/socket")
+          .then((res) => {
+            newsocket = io()
+            setSocket(newsocket)
+          })
+          .catch((err) => {
+            console.error(err)
+          })
       }
     }
 
