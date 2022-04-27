@@ -12,39 +12,16 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   const setSocket = useStore((state: any) => state.setSocket)
   const socket = useStore((state: any) => state.socket)
 
-  const onUsernameSelection = (username: string): void => {
-    if (!socket) return
-    socket.auth = { username }
-    socket.connect()
-  }
-
   useEffect(() => {
     if (!socket) return
 
     console.log("socket", socket)
-    onUsernameSelection(pageProps.user.email)
     socket?.on("connect", () => {
       console.log("connected")
-      const appUsers = [...users]
-      const connectedUser = appUsers.map((user) => {
-        if (user.self) {
-          user.connected = true
-        }
-        return user
-      })
-      setUsers([...connectedUser])
-      console.log("connected Users", users)
     })
 
     socket.on("disconnect", () => {
-      const appUsers = [...users]
-      const disconnectedUser = appUsers.map((user) => {
-        if (user.self) {
-          user.connected = false
-        }
-        return user
-      })
-      setUsers([...disconnectedUser])
+      console.log("disconnected")
     })
 
     socket?.on("connect_error", (err: any) => {
@@ -61,23 +38,16 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
       users = users.sort((a, b) => {
         if (a.self) return -1
         if (b.self) return 1
-        if (a.username < b.username) return -1
-        return a.username > b.username ? 1 : 0
+        if (a.userID < b.userID) return -1
+        return a.userID > b.userID ? 1 : 0
       })
       setUsers(users)
       console.log("users", users)
     })
 
     socket?.on("user_connected", (user: any) => {
-      const appUsers = [...users, user]
-      const sortedUsers = appUsers.sort((a, b) => {
-        if (a.self) return -1
-        if (b.self) return 1
-        if (a.username < b.username) return -1
-        return a.username > b.username ? 1 : 0
-      })
-      setUsers([...sortedUsers])
-      console.log("user connected", users)
+      console.log("user connected")
+      console.log(user.user)
     })
   }, [socket])
 
@@ -87,14 +57,13 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
         axios("/api/socket").then((res) => {
           newsocket = io()
           setSocket(newsocket)
-          onUsernameSelection(pageProps.user.email)
         })
       }
     }
 
     return () => {
       socket?.off("connect_error")
-      socket?.disconnect()
+      // socket?.disconnect()
     }
   }, [pageProps.user])
 

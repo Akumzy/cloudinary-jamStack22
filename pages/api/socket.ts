@@ -11,6 +11,8 @@ type Data = {
 let users: string[] = []
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
+  const session = await getSession({ req })
+  console.log("first session", session?.user.userId)
   //@ts-ignore
   if (res.socket?.server?.io) {
     console.log("Socket is already running")
@@ -18,75 +20,99 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     console.log("Socket is initializing")
     //@ts-ignore
     const io = new Server(res.socket?.server)
+
     //@ts-ignore
     res.socket?.server?.io = io
-    //get user from session next.js
-    const session = await getSession({ req })
-    console.log("user session", session)
+  }
+  //@ts-ignore
+  res.socket?.server?.io.on("connection", async (socket) => {
     if (!session || !session.user) {
       return res.status(401).json({ message: "Unauthorized" })
     }
 
-    io.use((socket, next) => {
-      const sessionID = socket.handshake.auth.sessionID
-      if (sessionID) {
-        // find existing session
-        // const session = sessionStore.findSession(sessionID)
-        // if (session) {
-        //   socket.sessionID = sessionID
-        //   socket.userID = session.userID
-        //   socket.username = session.username
-        //   return next()
-        // }
-      }
-      const username = socket.handshake.auth.username
-      if (!username) {
-        return next(new Error("invalid username"))
-      }
-      //@ts-ignore
-      socket.username = username
-      next()
-    })
-
     const user = session.user
-
+    console.log(user.userId)
     const userChannels = await prisma.chatRoom.findMany({
       where: {
         members: {
           some: {
             user: {
-              id: session.user.userId,
+              id: user.userId,
             },
           },
         },
       },
     })
+    console.log("userChannels", userChannels)
+    //get users chatroom id
+    const userChannelsIds = userChannels.map((channel) => channel.id)
+    userChannelsIds.forEach((channelId) => {
+      socket.join(channelId)
+    })
 
-    io.on("connection", (socket) => {
-      console.log("a user connected")
-
-      //get users chatroom id
-      const userChannelsIds = userChannels.map((channel) => channel.id)
-      userChannelsIds.forEach((channelId) => {
-        socket.join(channelId)
-      })
-
-      socket.on("join_channel", async (channelId: string) => {
+    socket.on("join_channel", async ({ channelId, userId }: any, ack: Function) => {
+      try {
+        console.log("join_channel", channelId)
+        console.log("userId", userId)
         //ensure user is not already in channel
-        if (userChannelsIds.includes(channelId)) {
-          return
-        }
+        // if (userChannelsIds.includes(channelId)) {
+        //   console.log("Already in channel")
+        //   throw new Error("Already in channel")
+        // }
+        // const channel = await prisma.chatRoom.findUnique({
+        //   where: {
+        //     id: channelId,
+        //   },
+        // })
+        // console.log("channelbyid", channel)
 
-        const channel = await prisma.chatRoom.update({
-          where: { id: channelId },
+        //add new channel memebr to db
+        // await prisma.chatRoom.update({
+        //   where: {
+        //     id: channelId,
+        //   },
+        //   data: {
+        //     members: {
+        //       connect: {
+        //         user: {
+        //           id: userId,
+        //         },
+        //       },
+        //     },
+        //   },
+        // })
+
+        // const channel = await prisma.chatRoom.update({
+        //   where: { id: channelId },
+        //   data: {
+        //     members: {
+        //       create: [
+        //         {
+        //           user: {
+        //             connect: {
+        //               id: userId,
+        //             },
+        //           },
+        //           chatRoom: {
+        //             connect: {
+        //               id: channelId,
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        // })
+        const channel = await prisma.chatRoomMember.create({
           data: {
-            members: {
-              create: {
-                user: {
-                  connect: {
-                    id: user.userId,
-                  },
-                },
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
+            chatRoom: {
+              connect: {
+                id: channelId,
               },
             },
           },
@@ -94,73 +120,79 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         if (channel) {
           socket.join(channelId)
-          socket.broadcast.to(channelId).emit("joined_channel", {
+          socket.to(channelId).emit("joined_channel", {
             channelId,
+            user: user,
             message: `${user.name} joined the channel`,
           })
         }
-      })
-
-      socket.on("new_channel_message", async (data: Message) => {
-        const channel = await prisma.chatRoom.update({
-          where: { id: data.roomId },
-          data: {
-            messages: {
-              create: {
-                text: data.text,
-                isDefault: data.isDefault,
-                user: {
-                  connect: {
-                    id: user.userId,
-                  },
-                },
-              },
-            },
-          },
-        })
-
-        if (channel) {
-          socket.broadcast.to(data.roomId).emit("channel_message", {
-            data,
-          })
-        }
-      })
-
-      socket.on("create_channel", async (data: ChatRoom) => {
-        const channel = await prisma.chatRoom.create({
-          data: {
-            name: data.name,
-            description: data.description,
-            creatorId: user.userId,
-            members: {
-              create: {
-                user: {
-                  connect: {
-                    id: user.userId,
-                  },
-                },
-              },
-            },
-          },
-        })
-
-        if (channel) {
-          socket.broadcast.emit("new_channel", {
-            data,
-          })
-        }
-      })
-
-      console.log("users", users)
-      socket.emit("users", users)
-      // notify existing users
-      socket.broadcast.emit("user_connected", {
-        userID: socket.id,
-        //@ts-ignore
-        username: socket.username,
-      })
+        ack(null, channel)
+      } catch (error) {
+        console.log(error)
+        console.log("user channels", userChannelsIds)
+        console.log("join_channel", channelId)
+        ack("Unable to join channel")
+      }
     })
-  }
+
+    socket.on("new_channel_message", async (data: Message) => {
+      const channel = await prisma.chatRoom.update({
+        where: { id: data.roomId },
+        data: {
+          messages: {
+            create: {
+              text: data.text,
+              isDefault: data.isDefault,
+              user: {
+                connect: {
+                  id: user.userId,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (channel) {
+        socket.broadcast.to(data.roomId).emit("channel_message", {
+          data,
+        })
+      }
+    })
+
+    socket.on("create_channel", async (data: ChatRoom) => {
+      const channel = await prisma.chatRoom.create({
+        data: {
+          name: data.name,
+          description: data.description,
+          creatorId: user.userId,
+          members: {
+            create: {
+              user: {
+                connect: {
+                  id: user.userId,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (channel) {
+        socket.broadcast.emit("new_channel", {
+          data,
+        })
+      }
+    })
+
+    // console.log("users", users)
+    // socket.emit("users", users)
+    // notify existing users
+    socket.broadcast.emit("user_connected", {
+      userID: socket.id,
+      user: user.email,
+    })
+  })
 
   res.end()
 }

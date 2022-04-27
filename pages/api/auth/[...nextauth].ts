@@ -15,8 +15,6 @@ export default NextAuth({
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
       //retrieve session id
-      const sessionId = session.id
-      console.log("calback session", sessionId)
 
       if (session.user) {
         session.user.userId = user.id

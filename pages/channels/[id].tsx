@@ -12,15 +12,18 @@ import {
 } from "../../components/icons/images";
 import { UserComponent } from "../../components/Navigation";
 import axios from "axios";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
+import { useStore } from "../../store/appStore";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export default function ChatRoom() {
+  const { mutate } = useSWRConfig();
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
   const router = useRouter();
   const { id } = router.query;
+  const socket = useStore((state: any) => state.socket);
   const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher);
   const channelMembers = channelDetail?.members;
   const channelCreator = useMemo(() => {
@@ -36,11 +39,19 @@ export default function ChatRoom() {
     () => channelMembers?.some((member: any) => member.userId === user?.userId),
     [channelMembers]
   );
-
   function closeMenuModal() {
     setOpenModalMenu(false);
     setOpenMenu(false);
   }
+
+  useEffect(() => {
+    if (socket) {
+      console.log("new socket2", socket.connected);
+      socket?.on("joined_channel", ({ channelId, user, message }: any) => {
+        console.log("joined_channel", channelId, user, message);
+      });
+    }
+  }, [socket]);
 
   function openMenuModal() {
     setOpenModalMenu(true);
@@ -52,6 +63,26 @@ export default function ChatRoom() {
   function menuClose() {
     closeMenuModal();
     setOpenMenu(false);
+  }
+
+  function handleJoinChannel() {
+    console.log("new socket2", socket.connected);
+
+    console.log("join channel");
+    socket?.emit(
+      "join_channel",
+      { channelId: id, userId: user?.userId },
+      (error: any, channel: any) => {
+        if (error) {
+          console.error("error joining channel", error);
+        } else {
+          console.log("joined channel", channel);
+          console.log("joined", channelDetail);
+        }
+      }
+    );
+    mutate(`/api/channel/${id}`);
+    console.log("channelDetail", channelDetail);
   }
 
   return (
@@ -97,7 +128,7 @@ export default function ChatRoom() {
                     </div>
                     <div
                       className={
-                        `${data?.user ? "bg-green-800" : "bg-red-800"} ` +
+                        `${user ? "bg-green-800" : "bg-red-800"} ` +
                         "rounded-full w-2 h-2"
                       }
                     ></div>
@@ -111,13 +142,13 @@ export default function ChatRoom() {
           <div className="flex items-center space-x-4">
             <div className="rounded-full w-8 h-8 overflow-hidden hidden md:block">
               <img
-                src={data?.user.image}
+                src={user?.image}
                 className="w-full h-full block"
                 alt="user image"
               />
             </div>
             <p className="font-bold w-40 text-sm text-blue-off-blue hidden md:block uppercase truncate text-ellipsis ">
-              {data?.user.name}
+              {user?.name}
             </p>
           </div>
           <div className="flex items-center px-1 bg-white rounded-full h-8 w-8">
@@ -131,11 +162,11 @@ export default function ChatRoom() {
         <ChannelRoomsDrawer
           isOpenModal={openModalMenu}
           closeModal={closeMenuModal}
-          name={data?.user.name}
-          image={data?.user.image}
+          name={user?.name}
+          image={user?.image}
           channelDetail={channelDetail}
           creatorDetails={channelCreator}
-          user={data?.user}
+          user={user}
         />
       ) : null}
 
@@ -161,7 +192,7 @@ export default function ChatRoom() {
             <div className="flex mb-9 space-x-[28px] ">
               <div className="rounded-[7px] w-11 h-11 overflow-hidden hidden md:block">
                 <img
-                  src={data?.user.image}
+                  src={user?.image}
                   className="w-full h-full block"
                   alt="user image"
                 />
@@ -169,7 +200,7 @@ export default function ChatRoom() {
               <div className="flex-1">
                 <div className="flex space-x-4 text-blue-off-blue items-center">
                   <span className="capitalize font-bold text-lg ">
-                    {data?.user.name}
+                    {user?.name}
                   </span>
                   <span className="font-medium text-sm">
                     yesterday at 1:29PM
@@ -192,7 +223,10 @@ export default function ChatRoom() {
               <div className="flex ">
                 <p className="text-lg">
                   You are currently not a member of this channel! Click
-                  <span className="underline text-blue-700 cursor-pointer font-bold mx-2 ">
+                  <span
+                    onClick={handleJoinChannel}
+                    className="underline text-blue-700 cursor-pointer font-bold mx-2 "
+                  >
                     Join Channel
                   </span>
                   to join.
@@ -211,4 +245,21 @@ export default function ChatRoom() {
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps(ctx: any) {
+  const session = await getSession(ctx);
+  if (session && session.user) {
+    return {
+      props: {
+        user: session.user,
+      },
+    };
+  }
+  return {
+    redirect: {
+      permanent: false,
+      destination: "/",
+    },
+  };
 }
