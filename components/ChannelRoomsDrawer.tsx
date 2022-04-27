@@ -78,13 +78,13 @@ export default function ChannelRoomsDrawer({
                     <p className="font-bold text-left text-lg text-white-light uppercase mb-6">
                       members
                     </p>
-                    {channelDetail &&
-                      channelDetail.members.map((member: any) => (
-                        <div
-                          key={member.userId}
-                          className="flex-1 overflow-y-auto"
-                        >
-                          <div className="flex items-center w-full space-x-6 mb-3">
+                    <div className="flex-1 overflow-y-auto">
+                      {channelDetail &&
+                        channelDetail.members.map((member: any) => (
+                          <div
+                            key={member.userId}
+                            className="flex items-center w-full space-x-6 mb-3"
+                          >
                             <div className="w-10 h-10 border-2 rounded-lg">
                               <img
                                 src={member.user.image}
@@ -102,8 +102,8 @@ export default function ChannelRoomsDrawer({
                               }
                             ></div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                    </div>
                   </div>
 
                   <div className="flex items-center  w-full justify-between h-[60px]  px-[27px] py-[17px] bg-[#0B090C]  ">

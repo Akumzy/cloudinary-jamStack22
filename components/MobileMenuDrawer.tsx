@@ -75,9 +75,10 @@ export default function MobileMenuDrawer({
                       <div
                         onClick={() => onclickPush(channel.id)}
                         key={channel.id}
+                        className="hover:bg-purple-off-purple"
                       >
-                        <div className="pl-[27px] mb-5 flex items-center cursor-pointer uppercase">
-                          <div className="w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
+                        <div className="pl-[27px] mb-2 flex items-center cursor-pointer uppercase">
+                          <div className="my-1 w-[42px] h-[42px] font-semibold text-[18px] flex items-center justify-center bg-purple-light-purple text-white rounded-lg mr-3 ">
                             {getAcronyms(channel.name)}
                           </div>
                           <span className="font-medium text-sm text-white-light uppercase ">
