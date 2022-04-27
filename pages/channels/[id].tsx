@@ -1,7 +1,7 @@
 import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
 import Editor from "../../components/Editor";
 import {
@@ -23,16 +23,20 @@ export default function ChatRoom() {
   const { id } = router.query;
   const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher);
   const channelMembers = channelDetail?.members;
-  const channelCreator = channelMembers
-    ? channelMembers.find(
-        (member: any) => member.userId === channelDetail.creatorId
-      ).user
-    : null;
+  const channelCreator = useMemo(() => {
+    return channelMembers
+      ? channelMembers.find(
+          (member: any) => member.userId === channelDetail.creatorId
+        ).user
+      : null;
+  }, [channelMembers]);
   const { data, status } = useSession();
   const user = data?.user;
-  const isChannelMember = channelMembers?.some(
-    (member: any) => member.userId === user?.userId
+  const isChannelMember = useMemo(
+    () => channelMembers?.some((member: any) => member.userId === user?.userId),
+    [channelMembers]
   );
+
   function closeMenuModal() {
     setOpenModalMenu(false);
     setOpenMenu(false);
