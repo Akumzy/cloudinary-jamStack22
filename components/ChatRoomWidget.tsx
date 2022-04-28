@@ -1,17 +1,9 @@
-import React, { Component } from "react";
-import { CameraIcon } from "./icons/images";
+import React, { Component } from "react"
+import { CameraIcon } from "./icons/images"
 
 type MyProps = {
-  update: ({
-    imageUrl,
-    height,
-    width,
-  }: {
-    imageUrl: string;
-    height: number;
-    width: number;
-  }) => void;
-};
+  update: ({ imageUrl, height, width }: { imageUrl: string; height: number; width: number }) => void
+}
 
 class ChatRoomWidget extends Component<MyProps> {
   componentDidMount() {
@@ -26,31 +18,34 @@ class ChatRoomWidget extends Component<MyProps> {
             imageUrl: result.info.secure_url,
             height: result.info.height,
             width: result.info.width,
-          });
-          console.log("new IMGurl", result.info);
+          })
+          console.log("new IMGurl", result.info)
         }
-      }
-    );
+      },
+    )
     document.getElementById("upload-icon")?.addEventListener(
       "click",
       function () {
-        console.log("Eze");
-        myWidget.open();
+        console.log("Eze")
+        myWidget.open()
       },
-      false
-    );
+      false,
+    )
   }
 
   render() {
     return (
       <button
         id="upload-icon"
-        className="w-full h-full flex items-center justify-center"
+        onClick={() => {
+          console.log("i am clicked")
+        }}
+        className="hover:rounded-full hover:bg-black w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
       >
         <CameraIcon />
       </button>
-    );
+    )
   }
 }
 
-export default ChatRoomWidget;
+export default ChatRoomWidget

@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
 import Editor from "../../components/Editor";
+import { fill } from "@cloudinary/url-gen/actions/resize";
+import { Cloudinary } from "@cloudinary/url-gen";
 import {
   CloseMenuIcon,
   ImageUploadIcon,
@@ -17,9 +19,12 @@ import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import { useStore } from "../../store/appStore";
 import format from "date-fns/format";
-import { formattedTime, getNumberOfDays } from "../../utils/utils";
+import { formattedTime, getNumberOfDays, getPublicId } from "../../utils/utils";
+import { AdvancedImage } from "@cloudinary/react";
 import ImageUploadModal from "../../components/ImageUploadModal";
 import { v4 as uuid } from "uuid";
+import ChatRoomWidget from "../../components/ChatRoomWidget";
+import Script from "next/script";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const messageFetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -31,18 +36,28 @@ const updateChat = (data: any, message: any) =>
 interface IncommingMessage {
   id: string;
   createdAt: string;
-  text: string;
+  image?: {
+    width: number;
+    height: number;
+    imageUrl: string;
+  };
+  text?: string;
   userId: string;
   roomId: string;
   isDefault: boolean;
 }
 export default function ChatRoom({ user }: any) {
+  const [uploadPhoto, setUploadPhoto] = useState({
+    imageUrl: "",
+    height: 0,
+    width: 0,
+  });
   const { mutate } = useSWRConfig();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
-  const [imageUploadModal, setImageUploadModal] = useState<boolean>(false);
+  // const [imageUploadModal, setImageUploadModal] = useState<boolean>(false)
   const { id } = router.query;
   const [editorContent, setEditorContent] = useState("");
   const socket = useStore((state: any) => state.socket);
@@ -55,11 +70,17 @@ export default function ChatRoom({ user }: any) {
   const messageRef = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<any>(null);
   const [isMessageLoading, setIsMessageLoading] = useState<boolean>(false);
-  const [uploadPhoto, setUploadPhoto] = useState({
-    imageUrl: "",
-    height: 0,
-    width: 0,
+  const [modalEditor, setModalEditor] = useState<any>(null);
+
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: "codewithwhyte",
+    },
+    url: {
+      secure: true,
+    },
   });
+
   const channelCreator = useMemo(() => {
     return channelMembers
       ? channelMembers.find(
@@ -157,29 +178,26 @@ export default function ChatRoom({ user }: any) {
     console.log("channelDetail", channelDetail);
   }
 
+  // console.log("channel messages", channelMessages)
+
   const getChatMemberInfo = (userId: string): User => {
     return channelMembers?.find((member: any) => member.userId === userId).user;
   };
 
-  //   {
-  //     "id": "cl2j0agpv01596kuxp318cph4",
-  //     "isDefault": true,
-  //     "text": "Channel created by Prince whyte Dabotubo",
-  //     "createdAt": "2022-04-28T12:52:36.259Z",
-  //     "userId": "cl2iy2jgo000834uxm17u3gg8",
-  //     "roomId": "cl2j0agpv01586kuxltdlpglc"
-  // }
-
   const handleSendMessage = async () => {
     setIsMessageLoading(true);
+    // console.log(modalEditor.getText(), "text")
+    const messagetext = modalEditor?.getText() ?? editorContent;
     try {
       const postData = {
         channelId: id,
-        text: editorContent,
+        text: messagetext,
+        image: uploadPhoto,
       };
       const message = {
         roomId: id,
-        text: editorContent,
+        text: messagetext,
+        image: uploadPhoto,
         createdAt: new Date().toISOString(),
         isDefault: false,
         id: uuid(),
@@ -193,6 +211,12 @@ export default function ChatRoom({ user }: any) {
         options
       );
 
+      modalEditor?.commands?.clearContent(true);
+      setUploadPhoto({
+        imageUrl: "",
+        height: 0,
+        width: 0,
+      });
       editor.commands.clearContent(true);
     } catch (error) {
       console.error("error sending message", error);
@@ -200,15 +224,20 @@ export default function ChatRoom({ user }: any) {
     setIsMessageLoading(false);
   };
 
-  function openImageUploadModal() {
-    setImageUploadModal(true);
-  }
   const closeImageUploadModal = () => {
-    setImageUploadModal(false);
+    setUploadPhoto({
+      imageUrl: "",
+      height: 0,
+      width: 0,
+    });
   };
 
   return (
     <div className="bg-white-offwhite min-h-screen h-full flex ">
+      <Script
+        src="https://widget.cloudinary.com/v2.0/global/all.js"
+        strategy="beforeInteractive"
+      />
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
         <div className="w-full h-[60px] px-[27px] py-[17px] boxShadow ">
           <Link href="/channels">
@@ -322,6 +351,12 @@ export default function ChatRoom({ user }: any) {
             {channelMembers &&
               Array.isArray(channelMessages) &&
               channelMessages.map((message: IncommingMessage) => {
+                const imagePublicId = getPublicId(
+                  message.image?.imageUrl ?? null
+                );
+                const myImage = cld.image(imagePublicId);
+                myImage.resize(fill().width(240).height(320));
+
                 const { image, name } = getChatMemberInfo(message.userId);
                 return (
                   <div
@@ -353,6 +388,9 @@ export default function ChatRoom({ user }: any) {
                         </span>
                       </div>
                       <div>
+                        {message.image?.imageUrl ? (
+                          <AdvancedImage cldImg={myImage} />
+                        ) : null}
                         <p className="text-sm font-normal text-white-light">
                           {message.text}
                         </p>
@@ -394,12 +432,8 @@ export default function ChatRoom({ user }: any) {
                 setTextEditor={setEditor}
                 setEditorContent={setEditorContent}
               />
-              <button
-                onClick={openImageUploadModal}
-                className="hover:rounded-full hover:bg-black w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
-              >
-                <ImageUploadIcon />
-              </button>
+
+              <ChatRoomWidget update={setUploadPhoto} />
               <button
                 disabled={!editorContent.trim() || isMessageLoading}
                 onClick={handleSendMessage}
@@ -411,10 +445,11 @@ export default function ChatRoom({ user }: any) {
           )}
         </footer>
         <ImageUploadModal
-          isOpen={imageUploadModal}
+          setEditor={setModalEditor}
+          handleUpload={handleSendMessage}
+          imgUrl={uploadPhoto.imageUrl}
+          isOpen={uploadPhoto.imageUrl ? true : false}
           onClose={closeImageUploadModal}
-          uploadPhoto={uploadPhoto}
-          setUploadPhoto={setUploadPhoto}
         />
       </div>
     </div>
