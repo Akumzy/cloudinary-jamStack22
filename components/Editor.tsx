@@ -1,7 +1,10 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
-export default function Editor() {
+interface Props {
+  setEditorContent: (content: string) => void;
+}
+export default function Editor({ setEditorContent }: Props) {
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -14,6 +17,9 @@ export default function Editor() {
       }),
     ],
     content: "",
+    onUpdate: ({ editor }) => {
+      setEditorContent(editor.getText());
+    },
   });
 
   return (
