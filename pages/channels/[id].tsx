@@ -6,10 +6,11 @@ import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
 import Editor from "../../components/Editor";
 import {
   CloseMenuIcon,
+  ImageUploadIcon,
   LeftArrowIcon,
   MenuIcon,
   SendIcon,
-  Spinner,
+  SpinnerIcon,
 } from "../../components/icons/images";
 import { UserComponent } from "../../components/Navigation";
 import axios from "axios";
@@ -17,6 +18,7 @@ import useSWR, { useSWRConfig } from "swr";
 import { useStore } from "../../store/appStore";
 import format from "date-fns/format";
 import { formattedTime, getNumberOfDays } from "../../utils/utils";
+import ImageUploadModal from "../../components/ImageUploadModal";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const messageFetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -35,6 +37,7 @@ export default function ChatRoom({ user }: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [openModalMenu, setOpenModalMenu] = useState(false);
+  const [imageUploadModal, setImageUploadModal] = useState<boolean>(false);
   const { id } = router.query;
   const [editorContent, setEditorContent] = useState("");
   const socket = useStore((state: any) => state.socket);
@@ -55,15 +58,11 @@ export default function ChatRoom({ user }: any) {
     () => channelMembers?.some((member: any) => member.userId === user?.userId),
     [channelDetail]
   );
+
   function closeMenuModal() {
     setOpenModalMenu(false);
     setOpenMenu(false);
   }
-
-  // console.log("chatroom messages", channelMessages);
-  // console.log("chatroom members", channelMembers);
-  // console.log("isChannelmember", isChannelMember);
-
   useEffect(() => {
     if (socket) {
       socket?.on("new_member", ({ newChannelMember, channelId }: any) => {
@@ -153,6 +152,13 @@ export default function ChatRoom({ user }: any) {
     } catch (error) {
       console.error("error sending message", error);
     }
+  };
+
+  function openImageUploadModal() {
+    setImageUploadModal(true);
+  }
+  const closeImageUploadModal = () => {
+    setImageUploadModal(false);
   };
 
   return (
@@ -317,12 +323,11 @@ export default function ChatRoom({ user }: any) {
             <div className="bg-purple-off-purple text-white-light w-full px-[27px] py-4 min-h-[62px]">
               <div className="text-lg justify-center flex items-center">
                 <p className="hidden lg:flex">
-                  {" "}
                   You are currently not a member of this channel! Click
                 </p>
                 {isLoading ? (
                   <div className=" w-fit h-fit mx-2">
-                    <Spinner />
+                    <SpinnerIcon />
                   </div>
                 ) : (
                   <span
@@ -339,6 +344,12 @@ export default function ChatRoom({ user }: any) {
             <div className=" bg-purple-off-purple px-[17px] py-2 flex justify-between items-center rounded-lg ">
               <Editor setEditorContent={setEditorContent} />
               <button
+                onClick={openImageUploadModal}
+                className="hover:rounded-full hover:bg-black w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
+              >
+                <ImageUploadIcon />
+              </button>
+              <button
                 onClick={handleSendMessage}
                 className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
               >
@@ -347,6 +358,10 @@ export default function ChatRoom({ user }: any) {
             </div>
           )}
         </footer>
+        <ImageUploadModal
+          isOpen={imageUploadModal}
+          onClose={closeImageUploadModal}
+        />
       </div>
     </div>
   );

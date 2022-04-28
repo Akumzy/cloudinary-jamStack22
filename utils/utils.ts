@@ -38,3 +38,13 @@ export function getNumberOfDays(createdAt: string) {
     return "today";
   }
 }
+
+function removeExt(publicId: string) {
+  const ext = publicId.split(".")[1];
+  return publicId.replace(`.${ext}`, "");
+}
+
+export function getPublicId(url: string) {
+  const urlParts = url.split("/");
+  return removeExt(urlParts[urlParts.length - 1]);
+}
