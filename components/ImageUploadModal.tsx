@@ -11,14 +11,25 @@ import { Cloudinary } from "@cloudinary/url-gen";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  uploadPhoto: {
+    imageUrl: string;
+    height: number;
+    width: number;
+  };
+  setUploadPhoto: (uploadPhoto: any) => void;
 }
-export default function ImageUploadModal({ onClose, isOpen }: ModalProps) {
+export default function ImageUploadModal({
+  onClose,
+  isOpen,
+  uploadPhoto,
+  setUploadPhoto,
+}: ModalProps) {
   const [editorContent, setEditorContent] = useState("");
-  const [uploadPhoto, setUploadPhoto] = useState({
-    imageUrl: "",
-    height: 0,
-    width: 0,
-  });
+  // const [uploadPhoto, setUploadPhoto] = useState({
+  //   imageUrl: "",
+  //   height: 0,
+  //   width: 0,
+  // });
   const cld = new Cloudinary({
     cloud: {
       cloudName: "codewithwhyte",
@@ -30,6 +41,15 @@ export default function ImageUploadModal({ onClose, isOpen }: ModalProps) {
   const imagePublicId = getPublicId(uploadPhoto.imageUrl);
   const myImage = cld.image(imagePublicId);
   myImage.resize(fill().width(400).height(300));
+
+  // function sendImageDetails() {
+  //   const imageDetails = {
+  //     imageUrl: uploadPhoto.imageUrl,
+  //     height: uploadPhoto.height,
+  //     width: uploadPhoto.width,
+
+  //   }
+  // }
 
   return (
     <>
@@ -89,7 +109,7 @@ export default function ImageUploadModal({ onClose, isOpen }: ModalProps) {
                   )}
                 </div>
                 <div className="rounded-lg w-full mb-4 px-2 py-2 bg-white-cream">
-                  <Editor setEditorContent={setEditorContent} />
+                  {/* <Editor setEditorContent={setEditorContent} /> */}
                 </div>
                 <div className="w-fit mx-auto">
                   <button className=" bg-green-800 px-4 py-1 rounded-lg text-white-cream font-medium capitalize">

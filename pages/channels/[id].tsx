@@ -55,7 +55,11 @@ export default function ChatRoom({ user }: any) {
   const messageRef = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<any>(null);
   const [isMessageLoading, setIsMessageLoading] = useState<boolean>(false);
-
+  const [uploadPhoto, setUploadPhoto] = useState({
+    imageUrl: "",
+    height: 0,
+    width: 0,
+  });
   const channelCreator = useMemo(() => {
     return channelMembers
       ? channelMembers.find(
@@ -409,6 +413,8 @@ export default function ChatRoom({ user }: any) {
         <ImageUploadModal
           isOpen={imageUploadModal}
           onClose={closeImageUploadModal}
+          uploadPhoto={uploadPhoto}
+          setUploadPhoto={setUploadPhoto}
         />
       </div>
     </div>
