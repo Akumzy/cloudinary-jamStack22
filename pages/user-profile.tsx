@@ -4,7 +4,6 @@ import { getSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { updateUserProfile } from "../services/profile"
 import CloudinaryUploadWidget from "../components/CloudinaryWidget"
-import { useStore } from "../store/appStore"
 
 export interface Props {
   user: User
@@ -14,11 +13,6 @@ export default function EditProfile({ user }: Props) {
   const [editInfo, setEditInfo] = useState(false)
   const [userPhoto, setUserPhoto] = useState(user.image)
   const [userBio, setUserBio] = useState(user.bio)
-  const socket = useStore((state: any) => state.socket)
-
-  useEffect(() => {
-    console.log("socket", socket)
-  }, [])
 
   function editUserDetails() {
     setEditInfo(true)

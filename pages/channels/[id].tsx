@@ -1,7 +1,7 @@
 import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
 import Editor from "../../components/Editor";
 import {
@@ -19,9 +19,14 @@ import { useStore } from "../../store/appStore";
 import format from "date-fns/format";
 import { formattedTime, getNumberOfDays } from "../../utils/utils";
 import ImageUploadModal from "../../components/ImageUploadModal";
+import { v4 as uuid } from "uuid";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const messageFetcher = (url: string) => axios.get(url).then((res) => res.data);
+const updateChat = (data: any, message: any) =>
+  axios
+    .post("/api/messages/create", data)
+    .then((res) => [...message, res.data]);
 
 interface IncommingMessage {
   id: string;
@@ -47,6 +52,10 @@ export default function ChatRoom({ user }: any) {
     messageFetcher
   );
   const channelMembers = useMemo(() => channelDetail?.members, [channelDetail]);
+  const messageRef = useRef<HTMLDivElement>(null);
+  const [editor, setEditor] = useState<any>(null);
+  const [isMessageLoading, setIsMessageLoading] = useState<boolean>(false);
+
   const channelCreator = useMemo(() => {
     return channelMembers
       ? channelMembers.find(
@@ -58,10 +67,16 @@ export default function ChatRoom({ user }: any) {
     () => channelMembers?.some((member: any) => member.userId === user?.userId),
     [channelDetail]
   );
-
   function closeMenuModal() {
     setOpenModalMenu(false);
     setOpenMenu(false);
+  }
+
+  function scrollToBottom() {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: "smooth" });
+      console.log("scrolling");
+    }
   }
   useEffect(() => {
     if (socket) {
@@ -74,7 +89,7 @@ export default function ChatRoom({ user }: any) {
             members: [...channelDetail.members, newChannelMember],
           };
           const options = { optimisticData: newchannel, rollbackOnError: true };
-          mutate(`/api/channel/${id}`, newchannel, options);
+          mutate(`/api/channel/${id}`, fetcher, options);
         }
       });
       socket.on("new_message", (chatRoomMessage: any) => {
@@ -84,11 +99,17 @@ export default function ChatRoom({ user }: any) {
             optimisticData: newMessages,
             rollbackOnError: true,
           };
-          mutate(`/api/messages/${id}`, newMessages, options);
+          mutate(`/api/messages/${id}`, messageFetcher, options);
         }
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (Array.isArray(channelMessages)) {
+      scrollToBottom();
+    }
+  }, [channelMessages]);
 
   function openMenuModal() {
     setOpenModalMenu(true);
@@ -136,22 +157,43 @@ export default function ChatRoom({ user }: any) {
     return channelMembers?.find((member: any) => member.userId === userId).user;
   };
 
+  //   {
+  //     "id": "cl2j0agpv01596kuxp318cph4",
+  //     "isDefault": true,
+  //     "text": "Channel created by Prince whyte Dabotubo",
+  //     "createdAt": "2022-04-28T12:52:36.259Z",
+  //     "userId": "cl2iy2jgo000834uxm17u3gg8",
+  //     "roomId": "cl2j0agpv01586kuxltdlpglc"
+  // }
+
   const handleSendMessage = async () => {
+    setIsMessageLoading(true);
     try {
-      const { data } = await axios.post("/api/messages/create", {
+      const postData = {
         channelId: id,
         text: editorContent,
-      });
-      if (id === channelDetail?.id) {
-        console.log("new message", data);
-        const newmessage = [...channelMessages, data];
-        const options = { optimisticData: newmessage, rollbackOnError: true };
-        mutate(`/api/messages/${id}`, newmessage, options);
-      }
-      console.log("message sent", data);
+      };
+      const message = {
+        roomId: id,
+        text: editorContent,
+        createdAt: new Date().toISOString(),
+        isDefault: false,
+        id: uuid(),
+        userId: user?.userId,
+      };
+      const newmessage = [...channelMessages, message];
+      const options = { optimisticData: newmessage, rollbackOnError: true };
+      mutate(
+        `/api/messages/${id}`,
+        updateChat(postData, channelMessages),
+        options
+      );
+
+      editor.commands.clearContent(true);
     } catch (error) {
       console.error("error sending message", error);
     }
+    setIsMessageLoading(false);
   };
 
   function openImageUploadModal() {
@@ -274,7 +316,7 @@ export default function ChatRoom({ user }: any) {
           </div>
           <div className="scroll-bar px-[27px] flex-1 py-10 bg-[#0B090C] overflow-y-auto ">
             {channelMembers &&
-              channelMessages &&
+              Array.isArray(channelMessages) &&
               channelMessages.map((message: IncommingMessage) => {
                 const { image, name } = getChatMemberInfo(message.userId);
                 return (
@@ -315,6 +357,8 @@ export default function ChatRoom({ user }: any) {
                   </div>
                 );
               })}
+            {/* style={{ float:"left", clear: "both" } */}
+            <div className=" float-left clear-both" ref={messageRef}></div>
           </div>
         </main>
 
@@ -342,7 +386,10 @@ export default function ChatRoom({ user }: any) {
             </div>
           ) : (
             <div className=" bg-purple-off-purple px-[17px] py-2 flex justify-between items-center rounded-lg ">
-              <Editor setEditorContent={setEditorContent} />
+              <Editor
+                setTextEditor={setEditor}
+                setEditorContent={setEditorContent}
+              />
               <button
                 onClick={openImageUploadModal}
                 className="hover:rounded-full hover:bg-black w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
@@ -350,10 +397,11 @@ export default function ChatRoom({ user }: any) {
                 <ImageUploadIcon />
               </button>
               <button
+                disabled={!editorContent.trim() || isMessageLoading}
                 onClick={handleSendMessage}
                 className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
               >
-                <SendIcon />
+                {isMessageLoading ? <SpinnerIcon /> : <SendIcon />}
               </button>
             </div>
           )}
