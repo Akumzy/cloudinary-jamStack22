@@ -62,10 +62,10 @@ model ChatRoom {
   id          String           @id @default(cuid())
   name        String
   description String
-  messages    Message[]
-  members     ChatRoomMember[]
   creatorId   String
   createdAt   DateTime         @default(now())
+  messages    Message[]
+  members     ChatRoomMember[]
 }
 
 model ChatRoomMember {
