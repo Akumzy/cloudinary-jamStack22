@@ -4,8 +4,6 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer";
 import Editor from "../../components/Editor";
-import { fill } from "@cloudinary/url-gen/actions/resize";
-import { Cloudinary } from "@cloudinary/url-gen";
 import {
   CloseMenuIcon,
   ImageUploadIcon,
@@ -19,12 +17,13 @@ import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import { useStore } from "../../store/appStore";
 import format from "date-fns/format";
-import { formattedTime, getNumberOfDays, getPublicId } from "../../utils/utils";
-import { AdvancedImage } from "@cloudinary/react";
+import { formattedTime, getNumberOfDays } from "../../utils/utils";
 import ImageUploadModal from "../../components/ImageUploadModal";
 import { v4 as uuid } from "uuid";
 import ChatRoomWidget from "../../components/ChatRoomWidget";
 import Script from "next/script";
+import ImageRender from "../../components/ImageRender";
+import Gallery from "../../components/Gallery";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const messageFetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -71,16 +70,7 @@ export default function ChatRoom({ user }: any) {
   const [editor, setEditor] = useState<any>(null);
   const [isMessageLoading, setIsMessageLoading] = useState<boolean>(false);
   const [modalEditor, setModalEditor] = useState<any>(null);
-
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName: "codewithwhyte",
-    },
-    url: {
-      secure: true,
-    },
-  });
-
+  const [activeImage, setActiveImage] = useState<imageObject | null>(null);
   const channelCreator = useMemo(() => {
     return channelMembers
       ? channelMembers.find(
@@ -236,7 +226,7 @@ export default function ChatRoom({ user }: any) {
     console.log("this image was clicked", imageRef.current);
   }
   return (
-    <div className="bg-white-offwhite min-h-screen h-full flex ">
+    <div className="flex h-full min-h-screen bg-white-offwhite ">
       <Script
         src="https://widget.cloudinary.com/v2.0/global/all.js"
         strategy="beforeInteractive"
@@ -244,14 +234,14 @@ export default function ChatRoom({ user }: any) {
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
         <div className="w-full h-[60px] px-[27px] py-[17px] boxShadow ">
           <Link href="/channels">
-            <div className="flex items-center font-bold text-lg text-white-light cursor-pointer w-fit">
+            <div className="flex items-center text-lg font-bold cursor-pointer text-white-light w-fit">
               <LeftArrowIcon />
               All Channels
             </div>
           </Link>
         </div>
         <div className="mt-[25px] mx-[27px] mb-4 h-[120px] ">
-          <p className="w-fit uppercase text-lg font-bold text-white-light mb-2 ">
+          <p className="mb-2 text-lg font-bold uppercase w-fit text-white-light ">
             {channelDetail && channelDetail.name}
           </p>
           <p className="text-justify text-base font-normal text-white-light mb-2 font-mono">
@@ -281,7 +271,7 @@ export default function ChatRoom({ user }: any) {
                       />
                     </div>
                     <div
-                      className="w-fit text-blue-off-blue font-medium text-base capitalize "
+                      className="text-base font-medium capitalize w-fit text-blue-off-blue "
                       title={`${member.user.name}`}
                     >
                       <p className="w-[200px] truncate text-ellipsis">
@@ -309,11 +299,11 @@ export default function ChatRoom({ user }: any) {
                 alt={`${user?.name}'s image`}
               />
             </div>
-            <p className="font-bold w-40 text-sm text-blue-off-blue hidden md:block uppercase truncate text-ellipsis ">
+            <p className="hidden w-40 text-sm font-bold uppercase truncate text-blue-off-blue md:block text-ellipsis ">
               {user?.name}
             </p>
           </div>
-          <div className="flex items-center px-1 bg-white rounded-full h-8 w-8">
+          <div className="flex items-center w-8 h-8 px-1 bg-white rounded-full">
             <UserComponent />
           </div>
         </div>
@@ -335,7 +325,7 @@ export default function ChatRoom({ user }: any) {
       <div className="bg-purple-light-purple flex-1 text-white w-[calc(100vw-324px)] flex flex-col h-screen ">
         <main className="flex flex-col h-[calc(100vh-78px)] ">
           <div className="flex items-center px-4 md:px-0 ">
-            <div onClick={menuOpen} className="cursor-pointer md:hidden block">
+            <div onClick={menuOpen} className="block cursor-pointer md:hidden">
               <MenuIcon />
             </div>
             <div className="w-full h-[60px] px-[27px] py-[17px] uppercase font-bold text-lg text-white-light ">
@@ -354,40 +344,28 @@ export default function ChatRoom({ user }: any) {
             {channelMembers &&
               Array.isArray(channelMessages) &&
               channelMessages.map((message: IncommingMessage) => {
-                const imagePublicId = getPublicId(
-                  message.image?.imageUrl ?? null
-                );
-                const myImage = cld.image(imagePublicId);
-                myImage.resize(fill().width(240).height(320));
-
                 const { image, name } = getChatMemberInfo(message.userId);
                 return (
                   <div
                     key={message.id}
-                    className="flex mb-4 md:space-x-[16px]  "
+                    className="flex mb-4 space-x-[16px] items-center "
                   >
-                    <div className="rounded-[7px] w-10 h-10 overflow-hidden hidden md:block">
+                    <div className="rounded-[7px] w-8 h-8 overflow-hidden hidden md:block">
                       <img
                         src={image}
-                        className="w-full h-full block"
+                        className="block w-full h-full"
                         alt="user image"
                       />
                     </div>
-                    <div
-                      className={
-                        `${
-                          message.image?.imageUrl ? "max-w-[250px]" : "w-2/3"
-                        } ` + "bg-purple-light-purple p-1 rounded-lg"
-                      }
-                    >
-                      <div className="flex space-x-4 text-blue-off-blue items-center">
-                        <span className="capitalize font-medium text-base ">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-4 text-blue-off-blue">
+                        <span className="text-base font-medium capitalize ">
                           {name}
                         </span>
-                        <span className="font-normal text-xs flex space-x-1">
+                        <span className="flex space-x-1 text-xs font-normal">
                           <span>{formattedTime(message.createdAt)}</span>
                           {!getNumberOfDays(message.createdAt) ? (
-                            <div className="space-x-1 flex">
+                            <div className="flex space-x-1">
                               <span>at</span>
                               <span>
                                 {format(new Date(message.createdAt), "hh:mm a")}
@@ -398,12 +376,16 @@ export default function ChatRoom({ user }: any) {
                       </div>
                       <div>
                         {message.image?.imageUrl ? (
-                          <AdvancedImage
-                            className="py-2 rounded-xl"
-                            cldImg={myImage}
-                          />
+                          <a
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              setActiveImage(message.image as any);
+                            }}
+                          >
+                            <ImageRender imageObject={message.image} />
+                          </a>
                         ) : null}
-                        <p className="text-sm font-medium text-white font-mono">
+                        <p className="text-sm font-normal text-white-light">
                           {message.text}
                         </p>
                       </div>
@@ -411,25 +393,26 @@ export default function ChatRoom({ user }: any) {
                   </div>
                 );
               })}
-            <div className=" float-left clear-both" ref={messageRef}></div>
+            {/* style={{ float:"left", clear: "both" } */}
+            <div className="float-left clear-both " ref={messageRef}></div>
           </div>
         </main>
 
         <footer className=" bg-[#312933] w-full px-[27px] py-4 min-h-[62px]  ">
           {!isChannelMember ? (
             <div className="bg-purple-off-purple text-white-light w-full px-[27px] py-4 min-h-[62px]">
-              <div className="text-lg justify-center flex items-center">
+              <div className="flex items-center justify-center text-lg">
                 <p className="hidden lg:flex">
                   You are currently not a member of this channel! Click
                 </p>
                 {isLoading ? (
-                  <div className=" w-fit h-fit mx-2">
+                  <div className="mx-2 w-fit h-fit">
                     <SpinnerIcon />
                   </div>
                 ) : (
                   <span
                     onClick={handleJoinChannel}
-                    className=" underline text-blue-700 cursor-pointer font-bold mx-2 "
+                    className="mx-2 font-bold text-blue-700 underline cursor-pointer "
                   >
                     Join Channel
                   </span>
@@ -448,7 +431,7 @@ export default function ChatRoom({ user }: any) {
               <button
                 disabled={!editorContent.trim() || isMessageLoading}
                 onClick={handleSendMessage}
-                className="hover:rounded-full hover:bg-white w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
+                className="flex items-center justify-center w-8 h-8 p-2 text-white hover:rounded-full hover:bg-white hover:text-green-400 "
               >
                 {isMessageLoading ? <SpinnerIcon /> : <SendIcon />}
               </button>
@@ -463,6 +446,13 @@ export default function ChatRoom({ user }: any) {
           onClose={closeImageUploadModal}
         />
       </div>
+      {!!activeImage && (
+        <Gallery
+          imageObject={activeImage}
+          visible={true}
+          onClose={() => setActiveImage(null)}
+        />
+      )}
     </div>
   );
 }

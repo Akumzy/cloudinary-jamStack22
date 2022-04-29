@@ -39,4 +39,9 @@ declare global {
   }
 }
 
+interface imageObject {
+  width: number
+  height: number
+  imageUrl: string
+}
 declare module "cloudinary"
