@@ -66,10 +66,10 @@ export default function ChannelRoomsDrawer({
                     <p className="w-fit uppercase text-lg font-bold text-white-light mb-2 ">
                       {channelDetail && channelDetail.name}
                     </p>
-                    <p className="text-justify text-base font-normal text-white-light mb-2">
+                    <p className="text-justify text-base font-normal text-white-light mb-2 font-mono">
                       {channelDetail && channelDetail.description}
                     </p>
-                    <p className="text-sm text-blue-off-blue italic font-medium">
+                    <p className="text-sm text-blue-off-blue italic font-medium font-mono">
                       created by: <span>{creatorDetails?.name}</span>
                     </p>
                   </div>

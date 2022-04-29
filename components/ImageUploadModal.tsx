@@ -33,16 +33,7 @@ export default function ImageUploadModal({
   });
   const imagePublicId = getPublicId(imgUrl);
   const myImage = cld.image(imagePublicId);
-  myImage.resize(fill().width(400).height(300));
-
-  // function sendImageDetails() {
-  //   const imageDetails = {
-  //     imageUrl: uploadPhoto.imageUrl,
-  //     height: uploadPhoto.height,
-  //     width: uploadPhoto.width,
-
-  //   }
-  // }
+  myImage.resize(fill().width(300).height(300));
 
   return (
     <>
@@ -89,7 +80,7 @@ export default function ImageUploadModal({
                   Upload Image
                 </Dialog.Title>
                 <div className="w-full h-[300px] my-4 text-center relative  ">
-                  <div className="w-full h-full ">
+                  <div className="w-full h-full flex justify-center ">
                     <AdvancedImage cldImg={myImage} />
                   </div>
                 </div>

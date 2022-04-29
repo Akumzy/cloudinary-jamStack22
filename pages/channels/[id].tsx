@@ -231,7 +231,10 @@ export default function ChatRoom({ user }: any) {
       width: 0,
     });
   };
-
+  const imageRef = useRef<HTMLImageElement>(null);
+  function imageClicked() {
+    console.log("this image was clicked", imageRef.current);
+  }
   return (
     <div className="bg-white-offwhite min-h-screen h-full flex ">
       <Script
@@ -251,10 +254,10 @@ export default function ChatRoom({ user }: any) {
           <p className="w-fit uppercase text-lg font-bold text-white-light mb-2 ">
             {channelDetail && channelDetail.name}
           </p>
-          <p className="text-justify text-base font-normal text-white-light mb-2">
+          <p className="text-justify text-base font-normal text-white-light mb-2 font-mono">
             {channelDetail && channelDetail.description}
           </p>
-          <p className="text-sm text-blue-off-blue italic font-medium">
+          <p className="text-sm text-blue-off-blue italic font-medium font-mono">
             created by: <span>{channelCreator?.name}</span>
           </p>
         </div>
@@ -361,16 +364,22 @@ export default function ChatRoom({ user }: any) {
                 return (
                   <div
                     key={message.id}
-                    className="flex mb-4 space-x-[16px] items-center "
+                    className="flex mb-4 md:space-x-[16px]  "
                   >
-                    <div className="rounded-[7px] w-8 h-8 overflow-hidden hidden md:block">
+                    <div className="rounded-[7px] w-10 h-10 overflow-hidden hidden md:block">
                       <img
                         src={image}
                         className="w-full h-full block"
                         alt="user image"
                       />
                     </div>
-                    <div className="flex-1">
+                    <div
+                      className={
+                        `${
+                          message.image?.imageUrl ? "max-w-[250px]" : "w-2/3"
+                        } ` + "bg-purple-light-purple p-1 rounded-lg"
+                      }
+                    >
                       <div className="flex space-x-4 text-blue-off-blue items-center">
                         <span className="capitalize font-medium text-base ">
                           {name}
@@ -389,9 +398,12 @@ export default function ChatRoom({ user }: any) {
                       </div>
                       <div>
                         {message.image?.imageUrl ? (
-                          <AdvancedImage cldImg={myImage} />
+                          <AdvancedImage
+                            className="py-2 rounded-xl"
+                            cldImg={myImage}
+                          />
                         ) : null}
-                        <p className="text-sm font-normal text-white-light">
+                        <p className="text-sm font-medium text-white font-mono">
                           {message.text}
                         </p>
                       </div>
@@ -399,7 +411,6 @@ export default function ChatRoom({ user }: any) {
                   </div>
                 );
               })}
-            {/* style={{ float:"left", clear: "both" } */}
             <div className=" float-left clear-both" ref={messageRef}></div>
           </div>
         </main>
