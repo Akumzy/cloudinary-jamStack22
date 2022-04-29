@@ -49,3 +49,21 @@ export function getPublicId(url: string | null) {
   const urlParts = url.split("/")
   return removeExt(urlParts[urlParts.length - 1])
 }
+
+export function scaleImageHeight(h: number, w: number, maxWidth: number) {
+  let ratio = w / h
+  let newH = Math.round((w > maxWidth ? maxWidth : w) * ratio)
+  if (newH > 400) {
+    newH = 400
+  }
+  if (w < maxWidth) {
+    return {
+      width: maxWidth,
+      height: newH,
+    }
+  }
+  return {
+    width: w > maxWidth ? maxWidth : w,
+    height: newH,
+  }
+}
