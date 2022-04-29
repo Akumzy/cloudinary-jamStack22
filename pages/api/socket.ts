@@ -41,8 +41,8 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
           })
           const userChannelsIds = userChannels.map((channel) => channel.id)
           userChannelsIds.forEach((channelId) => {
-            socket.join(channelId)
-            socket.broadcast.to(channelId).emit("active", data.user)
+            socket.join(channelId + "")
+            socket.broadcast.to(channelId + "").emit("active", data.user)
           })
           ack(null, userChannelsIds)
         } catch (error) {
@@ -70,8 +70,8 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
               user: true,
             },
           })
-          socket.join(data.channelId)
-          socket.broadcast.to(data.channelId).emit("new_member", {
+          socket.join(data.channelId + "")
+          socket.broadcast.to(data.channelId + "").emit("new_member", {
             newChannelMember,
             channelId: data.channelId,
           })

@@ -2,20 +2,20 @@ interface Active {
   user: User
 }
 interface JoinChannel {
-  userId: string
-  channelId: string
+  userId: number
+  channelId: number
 }
 
 interface User {
   name: string
   email: string
   image: string
-  userId: string
+  userId: number
   bio: string
 }
 
 interface ChatRoom {
-  id: string
+  id: number
   name: string
   description: string
   creatorId: string
@@ -25,7 +25,7 @@ interface ChatRoom {
 }
 
 interface Message {
-  id: string
+  id: number
   isDefault: boolean
   text: string
   createdAt: string

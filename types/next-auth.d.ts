@@ -10,17 +10,16 @@ declare module "next-auth" {
       name: string
       email: string
       image: string
-      userId: string
+      userId: number
       bio: string
     }
   }
 
   interface User {
     name: string
-      email: string
-      image: string
-  userId: string
-  bio: string
+    email: string
+    image: string
+    userId: number
+    bio: string
+  }
 }
-}
-

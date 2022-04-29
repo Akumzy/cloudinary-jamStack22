@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     //retrieve chatroom messages
     const chatRoomMessages = await prisma.message.findMany({
       where: {
-        roomId: channelId as string,
+        roomId: +channelId as number,
       },
       // include: {
       //   user: true,
