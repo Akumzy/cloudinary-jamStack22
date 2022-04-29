@@ -14,11 +14,11 @@ export default function Editor({ setEditorContent, setTextEditor }: Props) {
       },
     },
     extensions: [
-      // StarterKit.configure({
-      //   hardBreak: false,
-      // }),
+      StarterKit.configure({
+        hardBreak: false,
+      }),
       Placeholder.configure({
-        emptyEditorClass: "text-white font-bold text-md",
+        emptyEditorClass: "text-white",
         placeholder: "Add a comment...",
       }),
     ],
