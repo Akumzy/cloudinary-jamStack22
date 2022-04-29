@@ -63,7 +63,9 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     if (pageProps.user) {
       if (!socket) {
         axios.get("/api/socket")
-        newsocket = io(`${location.origin}/api/socket`).connect()
+        newsocket = io(`${location.origin}`, {
+          path: "/api/socket",
+        }).connect()
         setSocket(newsocket)
       }
     }
