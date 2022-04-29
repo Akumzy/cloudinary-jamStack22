@@ -23,6 +23,7 @@ specifiers:
   next: 12.1.0
   next-auth: ^4.3.1
   postcss: ^8.4.12
+  prisma: ^3.13.0
   react: ^17.0.2
   react-dom: ^17.0.2
   socket.io: ^4.4.1
@@ -39,7 +40,7 @@ dependencies:
   '@floating-ui/react-dom': 0.6.2_5539cae010396b202b015f3568914e95
   '@headlessui/react': 1.5.0_react-dom@17.0.2+react@17.0.2
   '@next-auth/prisma-adapter': 1.0.3_2b535bbfb604d219371c9582b52b11b1
-  '@prisma/client': 3.12.0
+  '@prisma/client': 3.12.0_prisma@3.13.0
   '@tiptap/core': 2.0.0-beta.174
   '@tiptap/react': 2.0.0-beta.108_f9947707ac080ff24f30e061131767eb
   '@tiptap/starter-kit': 2.0.0-beta.183
@@ -50,6 +51,7 @@ dependencies:
   lodash: 4.17.21
   next: 12.1.0_react-dom@17.0.2+react@17.0.2
   next-auth: 4.3.1_react-dom@17.0.2+react@17.0.2
+  prisma: 3.13.0
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   socket.io: 4.4.1
@@ -182,7 +184,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4.0.1
     dependencies:
-      '@prisma/client': 3.12.0
+      '@prisma/client': 3.12.0_prisma@3.13.0
       next-auth: 4.3.1_react-dom@17.0.2+react@17.0.2
     dev: false
 
@@ -324,7 +326,7 @@ packages:
     resolution: {integrity: sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==}
     dev: false
 
-  /@prisma/client/3.12.0:
+  /@prisma/client/3.12.0_prisma@3.13.0:
     resolution: {integrity: sha512-4NEQjUcWja/NVBvfuDFscWSk1/rXg3+wj+TSkqXCb1tKlx/bsUE00rxsvOvGg7VZ6lw1JFpGkwjwmsOIc4zvQw==}
     engines: {node: '>=12.6'}
     requiresBuild: true
@@ -335,10 +337,16 @@ packages:
         optional: true
     dependencies:
       '@prisma/engines-version': 3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980
+      prisma: 3.13.0
     dev: false
 
   /@prisma/engines-version/3.12.0-37.22b822189f46ef0dc5c5b503368d1bee01213980:
     resolution: {integrity: sha512-o+jo8d7ZEiVpcpNWUDh3fj2uPQpBxl79XE9ih9nkogJbhw6P33274SHnqheedZ7PyvPIK/mvU8MLNYgetgXPYw==}
+    dev: false
+
+  /@prisma/engines/3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b:
+    resolution: {integrity: sha512-Ip9CcCeUocH61eXu4BUGpvl5KleQyhcUVLpWCv+0ZmDv44bFaDpREqjGHHdRupvPN/ugB6gTlD9b9ewdj02yVA==}
+    requiresBuild: true
     dev: false
 
   /@rushstack/eslint-patch/1.1.2:
@@ -2677,6 +2685,16 @@ packages:
     resolution: {integrity: sha1-v77VbV6ad2ZF9LH/eqGjrE+jw4U=}
     dev: false
 
+  /prisma/3.13.0:
+    resolution: {integrity: sha512-oO1auBnBtieGdiN+57IgsA9Vr7Sy4HkILi1KSaUG4mpKfEbnkTGnLOxAqjLed+K2nsG/GtE1tJBtB7JxN1a78Q==}
+    engines: {node: '>=12.6'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b
+      ts-pattern: 4.0.2
+    dev: false
+
   /progress/2.0.3:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
     engines: {node: '>=0.4.0'}
@@ -3207,6 +3225,10 @@ packages:
     engines: {node: '>=0.6'}
     dev: false
     optional: true
+
+  /ts-pattern/4.0.2:
+    resolution: {integrity: sha512-eHqR/7A6fcw05vCOfnL6RwgGJbVi9G/YHTdYdjYmElhDdJ1SMn7pWs+6+YuxygaFwQS/g+cIDlu+UD8IVpur1A==}
+    dev: false
 
   /tsconfig-paths/3.14.1:
     resolution: {integrity: sha512-fxDhWnFSLt3VuTwtvJt5fpwxBHg5AdKWMsgcPOOIilyjymcYVZoCQF8fvFRezCNfblEXmi+PcM1eYHeOAgXCOQ==}
