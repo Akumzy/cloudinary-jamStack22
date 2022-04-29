@@ -1,13 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next"
+import type { NextApiRequest } from "next"
 import prisma from "../../../lib/prisma"
-import { Message } from "@prisma/client"
 import { getSession } from "next-auth/react"
 import { NextApiResponseServerIO } from "../../../types/socket"
-
-type Data = {
-  message: string
-}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
   if (req.method !== "POST") {
@@ -37,12 +32,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         image,
         text,
         userId: user.userId,
-        roomId: channelId as string,
+        roomId: +channelId as number,
       },
     })
 
     res.socket?.server?.io.on("connection", async (socket) => {
-      socket.broadcast.to(channelId).emit("new_message", chatRoomMessage)
+      socket.broadcast.to(channelId + "").emit("new_message", chatRoomMessage)
     })
 
     // res.socket?.server?.io.to(channelId).emit("new_message", chatRoomMessage)
