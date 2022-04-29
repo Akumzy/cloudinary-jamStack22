@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next"
+import type { NextApiRequest } from "next"
 import { getSession } from "next-auth/react"
 import prisma from "../../../lib/prisma"
 import { NextApiResponseServerIO } from "../../../types/socket"
@@ -67,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     chatRoom.members = [member]
     // @ts-ignore
     chatRoom.messages = [message]
-
+    console.log(JSON.stringify(chatRoom, null, 2))
     res.socket?.server?.io.on("connection", async (socket) => {
       socket.broadcast.emit("channelCreated", chatRoom)
       socket.join(chatRoom.id)
@@ -76,8 +76,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     return res.status(200).json(chatRoom)
 
     // return res.status(200).json(updatedUser)
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({ message: "Internal Server Error" })
+  } catch (error: any) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
   }
 }
