@@ -47,7 +47,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   useEffect((): any => {
     if (pageProps.user) {
       if (!socket) {
-        axios.get("/api/socket").finally(() => {
+        axios.get("/api/socket").then(() => {
           newsocket = io()
           setSocket(newsocket)
         })
