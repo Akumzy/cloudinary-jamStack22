@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react"
 import { Fragment, useState } from "react"
 import { createChannel } from "../services/channels"
+import { toast } from "react-toastify"
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
@@ -27,12 +28,11 @@ export default function NewChannel({ onClose, isOpen }: ModalProps) {
     const { data, error } = await createChannel(formData)
     if (error) {
       setIsLoading(false)
-      window.alert("something went wrong creating channel")
+      toast.error("something went wrong creating channel")
       console.error(error)
       return
     }
-    console.log(data)
-    alert("channel created")
+    toast.success("channel created !")
     setIsLoading(false)
     onClose()
   }
@@ -95,7 +95,7 @@ export default function NewChannel({ onClose, isOpen }: ModalProps) {
                   ></textarea>
                 </div>
 
-                <div className="w-full flex justify-end">
+                <div className="flex justify-end w-full">
                   <button
                     type="submit"
                     disabled={isLoading || !formData.name || !formData.description}

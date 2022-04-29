@@ -238,12 +238,6 @@ export default function ChatRoom({ user }: any) {
                     >
                       <p className="w-[200px] truncate text-ellipsis">{member.user.name}</p>
                     </div>
-                    {/* <div
-                      className={
-                        `${user ? "bg-green-800" : "bg-red-800"} ` +
-                        "rounded-full w-2 h-2"
-                      }
-                    ></div> */}
                   </div>
                 )
               })}

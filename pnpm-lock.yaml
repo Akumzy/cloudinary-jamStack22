@@ -8,6 +8,7 @@ specifiers:
   '@next-auth/prisma-adapter': ^1.0.3
   '@prisma/client': ^3.13.0
   '@tiptap/core': '>=2.0.0-beta.1 <3.0.0'
+  '@tiptap/extension-placeholder': ^2.0.0-beta.48
   '@tiptap/react': ^2.0.0-beta.108
   '@tiptap/starter-kit': ^2.0.0-beta.183
   '@types/node': 16.11.11
@@ -26,6 +27,7 @@ specifiers:
   prisma: ^3.13.0
   react: ^17.0.2
   react-dom: ^17.0.2
+  react-toastify: ^8.2.0
   socket.io: ^4.4.1
   socket.io-client: ^4.5.0
   swr: ^1.3.0
@@ -42,6 +44,7 @@ dependencies:
   '@next-auth/prisma-adapter': 1.0.3_5508d7df3260395f1a0fc1aca618bb77
   '@prisma/client': 3.13.0_prisma@3.13.0
   '@tiptap/core': 2.0.0-beta.174
+  '@tiptap/extension-placeholder': 2.0.0-beta.48_@tiptap+core@2.0.0-beta.174
   '@tiptap/react': 2.0.0-beta.108_f9947707ac080ff24f30e061131767eb
   '@tiptap/starter-kit': 2.0.0-beta.183
   axios: 0.26.1
@@ -53,6 +56,7 @@ dependencies:
   next-auth: 4.3.1_react-dom@17.0.2+react@17.0.2
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
+  react-toastify: 8.2.0_react-dom@17.0.2+react@17.0.2
   socket.io: 4.4.1
   socket.io-client: 4.5.0
   swr: 1.3.0_react@17.0.2
@@ -537,6 +541,17 @@ packages:
       '@tiptap/core': ^2.0.0-beta.1
     dependencies:
       '@tiptap/core': 2.0.0-beta.174
+    dev: false
+
+  /@tiptap/extension-placeholder/2.0.0-beta.48_@tiptap+core@2.0.0-beta.174:
+    resolution: {integrity: sha512-TZNGAHocPoV5DtB8Q5BwQU2uf5vDiwLxbgVHRAIme9P4VsVqa/U1i1TkyN5A5BVdfOzc+E4EOU7cKuyjy7DNyA==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0-beta.1
+    dependencies:
+      '@tiptap/core': 2.0.0-beta.174
+      prosemirror-model: 1.16.1
+      prosemirror-state: 1.3.4
+      prosemirror-view: 1.23.12
     dev: false
 
   /@tiptap/extension-strike/2.0.0-beta.27_@tiptap+core@2.0.0-beta.174:
@@ -1107,6 +1122,11 @@ packages:
       proxy-agent: 5.0.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /clsx/1.1.1:
+    resolution: {integrity: sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==}
+    engines: {node: '>=6'}
     dev: false
 
   /color-convert/2.0.1:
@@ -2827,6 +2847,17 @@ packages:
 
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
+  /react-toastify/8.2.0_react-dom@17.0.2+react@17.0.2:
+    resolution: {integrity: sha512-Pg2Ju7NngAamarFvLwqrFomJ57u/Ay6i6zfLurt/qPynWkAkOthu6vxfqYpJCyNhHRhR4hu7+bySSeWWJu6PAg==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.1.1
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+    dev: false
 
   /react/17.0.2:
     resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}

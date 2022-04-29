@@ -7,12 +7,11 @@ export default function Login({ providers }: any) {
   const [checked, setChecked] = useState<boolean>(true)
   const [pageTheme, setPageTheme] = useState<string>("dark")
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   function signUserIn(provider: any) {
     setIsLoading(() => !isLoading)
     signIn(provider.id, {
-      callbackUrl: "http://localhost:3000/user-profile",
+      callbackUrl: "/channels",
     })
   }
 
