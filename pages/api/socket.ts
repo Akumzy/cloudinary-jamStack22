@@ -35,7 +35,7 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
               members: {
                 some: {
                   user: {
-                    id: data.user.userId,
+                    id: +data.user.userId,
                   },
                 },
               },
@@ -59,12 +59,12 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
             data: {
               user: {
                 connect: {
-                  id: data.userId,
+                  id: +data.userId,
                 },
               },
               chatRoom: {
                 connect: {
-                  id: data.channelId,
+                  id: +data.channelId,
                 },
               },
             },
