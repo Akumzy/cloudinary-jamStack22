@@ -17,7 +17,7 @@ export default NextAuth({
       //retrieve session id
 
       if (session.user) {
-        session.user.userId = user.id
+        session.user.userId = +user.id
         session.user.bio = user.bio ?? ""
       }
       return session
