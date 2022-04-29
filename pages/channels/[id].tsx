@@ -352,47 +352,52 @@ export default function ChatRoom({ user }: any) {
                         alt="user image"
                       />
                     </div>
-                    <div
-                      className={
-                        `${
-                          message.image?.imageUrl
-                            ? "max-w-[330px]"
-                            : "max-w-2/3"
-                        } ` + "bg-purple-light-purple p-2 rounded-lg"
-                      }
-                    >
-                      {/* <div className="flex items-center space-x-4 text-blue-off-blue">
-                        <span className="text-base font-medium capitalize ">{name}</span>
+                    <div>
+                      <div className="flex items-center space-x-4 text-blue-off-blue ">
+                        <span className="text-base font-medium capitalize ">
+                          {name}
+                        </span>
                         <span className="flex space-x-1 text-xs font-normal">
                           <span>{formattedTime(message.createdAt)}</span>
                           {!getNumberOfDays(message.createdAt) ? (
                             <div className="flex space-x-1">
                               <span>at</span>
-                              <span>{format(new Date(message.createdAt), "hh:mm a")}</span>
+                              <span>
+                                {format(new Date(message.createdAt), "hh:mm a")}
+                              </span>
                             </div>
                           ) : null}
                         </span>
-                      </div> */}
-                      <div>
-                        {message.image?.imageUrl ? (
-                          <a
-                            onClick={(ev) => {
-                              ev.preventDefault();
-                              setActiveImage(message.image as any);
-                            }}
-                          >
-                            <ImageRender imageObject={message.image} />
-                          </a>
-                        ) : null}
-                        <p className="font-mono text-sm font-normal text-white-light">
-                          {message.text}
-                        </p>
+                      </div>
+                      <div
+                        className={
+                          `${
+                            message.image?.imageUrl
+                              ? "max-w-[330px]"
+                              : "max-w-2/3"
+                          } ` + "bg-purple-light-purple p-2 rounded-lg"
+                        }
+                      >
+                        <div>
+                          {message.image?.imageUrl ? (
+                            <a
+                              onClick={(ev) => {
+                                ev.preventDefault();
+                                setActiveImage(message.image as any);
+                              }}
+                            >
+                              <ImageRender imageObject={message.image} />
+                            </a>
+                          ) : null}
+                          <p className="font-mono text-sm font-normal text-white-light">
+                            {message.text}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 );
               })}
-            {/* style={{ float:"left", clear: "both" } */}
             <div className="float-left clear-both " ref={messageRef}></div>
           </div>
         </main>
