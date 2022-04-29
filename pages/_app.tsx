@@ -46,10 +46,12 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   useEffect((): any => {
     if (pageProps.user) {
       if (!socket) {
+
         const socket = SocketIOClient(location.origin, {
           path: "/api/socket",
         }).connect()
         setSocket(socket)
+
       }
     }
 
