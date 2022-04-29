@@ -31,38 +31,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         name,
         description,
         creatorId: user.userId,
-        messages: {
-          create: [
-            {
-              isDefault: true,
-              text: `Channel created by ${user.name}`,
-              user: {
-                connect: {
-                  id: user.userId,
-                },
-              },
-            },
-          ],
-        },
-        members: {
-          create: [
-            {
-              user: {
-                connect: {
-                  id: user.userId,
-                },
-              },
-            },
-          ],
-        },
       },
       include: {
-        messages: true,
         members: true,
+        messages: true,
       },
     })
-
-    // res?.socket?.server?.io?.emit("channelCreated", chatRoom)
+    const member = await prisma.chatRoomMember.create({
+      data: {
+        chatRoom: {
+          connect: {
+            id: chatRoom.id,
+          },
+        },
+        user: {
+          connect: {
+            id: user.userId,
+          },
+        },
+      },
+    })
+    const message = await prisma.message.create({
+      data: {
+        room: {
+          connect: {
+            id: chatRoom.id,
+          },
+        },
+        isDefault: true,
+        text: `Channel created by ${user.name}`,
+        user: {
+          connect: {
+            id: user.userId,
+          },
+        },
+      },
+    })
+    chatRoom.members = [member]
+    chatRoom.messages = [message]
 
     res.socket?.server?.io.on("connection", async (socket) => {
       socket.broadcast.emit("channelCreated", chatRoom)

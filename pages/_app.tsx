@@ -4,8 +4,8 @@ import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
 import { useStore } from "../store/appStore"
 import axios from "axios"
-import io from "Socket.IO-client"
-import { isActive } from "@tiptap/core"
+
+import io from "socket.io-client"
 
 let newsocket: any
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -62,14 +62,10 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   useEffect((): any => {
     if (pageProps.user) {
       if (!socket) {
-        axios("/api/socket")
-          .then((res) => {
-            newsocket = io()
-            setSocket(newsocket)
-          })
-          .catch((err) => {
-            console.error(err)
-          })
+        newsocket = io(location.origin, {
+          path: "/api/socket",
+        }).connect()
+        setSocket(newsocket)
       }
     }
 

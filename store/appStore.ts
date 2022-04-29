@@ -1,6 +1,5 @@
 import create from "zustand"
-import io, { Socket } from "Socket.IO-client"
-import axios from "axios"
+import { Socket } from "socket.io-client"
 
 export const useStore = create((set, get: any) => ({
   socket: null,

@@ -75,7 +75,8 @@ CREATE TABLE `ChatRoomMember` (
 CREATE TABLE `Message` (
     `id` VARCHAR(191) NOT NULL,
     `isDefault` BOOLEAN NULL DEFAULT false,
-    `text` VARCHAR(191) NOT NULL,
+    `image` JSON NULL,
+    `text` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `userId` VARCHAR(191) NOT NULL,
     `roomId` VARCHAR(191) NOT NULL,
