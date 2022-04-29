@@ -62,11 +62,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       },
     })
 
+    // res?.socket?.server?.io?.emit("channelCreated", chatRoom)
+
     res.socket?.server?.io.on("connection", async (socket) => {
       socket.broadcast.emit("channelCreated", chatRoom)
       socket.join(chatRoom.id)
     })
-    // res?.socket?.server?.io?.emit("channelCreated", chatRoom)
 
     return res.status(200).json(chatRoom)
 
