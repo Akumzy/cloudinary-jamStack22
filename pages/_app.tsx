@@ -6,9 +6,8 @@ import { SessionProvider } from "next-auth/react"
 import type { AppProps } from "next/app"
 import { useEffect } from "react"
 import { useStore } from "../store/appStore"
-import axios from "axios"
 
-import io from "socket.io-client"
+import SocketIOClient from "socket.io-client"
 
 let newsocket: any
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -35,7 +34,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     })
 
     socket?.on("connect_error", (err: any) => {
-      // console.error("connect_error", err)
+      console.error("connect_error", err)
       console.log("socket error")
     })
 
@@ -47,10 +46,12 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   useEffect((): any => {
     if (pageProps.user) {
       if (!socket) {
-        axios.get("/api/socket").then(() => {
-          newsocket = io()
-          setSocket(newsocket)
-        })
+
+        const socket = SocketIOClient(location.origin, {
+          path: "/api/socket",
+        }).connect()
+        setSocket(socket)
+
       }
     }
 
@@ -58,7 +59,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
       socket?.off("connect_error")
       socket?.disconnect()
     }
-  }, [pageProps.user])
+  }, [pageProps.user, socket])
 
   return (
     <SessionProvider session={session}>
