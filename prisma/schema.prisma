@@ -80,16 +80,16 @@ model ChatRoomMember {
 }
 
 model Message {
-  id        String   @id @default(cuid())
-  isDefault Boolean? @default(false)
+  id        String    @id @default(cuid())
+  isDefault Boolean?  @default(false)
   image     Json?
   text      String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   roomId    String
-  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  updatedAt DateTime @updatedAt
+  room      ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  updatedAt DateTime? @updatedAt
 }
 
 // pscale connect jam-stack22 main --port 3309
