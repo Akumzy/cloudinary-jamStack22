@@ -276,12 +276,12 @@ export default function ChatRoom({ user }: any) {
                         {member.user.name}
                       </p>
                     </div>
-                    <div
+                    {/* <div
                       className={
                         `${user ? "bg-green-800" : "bg-red-800"} ` +
                         "rounded-full w-2 h-2"
                       }
-                    ></div>
+                    ></div> */}
                   </div>
                 );
               })}
