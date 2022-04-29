@@ -31,36 +31,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         name,
         description,
         creatorId: user.userId,
+        createdAt: new Date(),
       },
     })
     const member = await prisma.chatRoomMember.create({
       data: {
-        chatRoom: {
-          connect: {
-            id: chatRoom.id,
-          },
-        },
-        user: {
-          connect: {
-            id: user.userId,
-          },
-        },
+        chatRoomId: chatRoom.id,
+        userId: user.userId,
       },
     })
     const message = await prisma.message.create({
       data: {
-        room: {
-          connect: {
-            id: chatRoom.id,
-          },
-        },
+        roomId: chatRoom.id,
+        userId: user.userId,
         isDefault: true,
         text: `Channel created by ${user.name}`,
-        user: {
-          connect: {
-            id: user.userId,
-          },
-        },
       },
     })
     // @ts-ignore
