@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
 
   const user = session.user
   const { name, description } = req.body
-
+  console.log(JSON.stringify({ BODY: req.body, user }, null, 2))
   try {
     const chatRoom = await prisma.chatRoom.create({
       data: {
@@ -32,28 +32,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         description,
         creatorId: user.userId,
         messages: {
-          create: [
-            {
-              isDefault: true,
-              text: `Channel created by ${user.name}`,
-              user: {
-                connect: {
-                  id: user.userId,
-                },
+          create: {
+            isDefault: true,
+            text: `Channel created by ${user.name}`,
+            user: {
+              connect: {
+                id: user.userId,
               },
             },
-          ],
+          },
         },
         members: {
-          create: [
-            {
-              user: {
-                connect: {
-                  id: user.userId,
-                },
+          create: {
+            user: {
+              connect: {
+                id: user.userId,
               },
             },
-          ],
+          },
         },
       },
       include: {
