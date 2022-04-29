@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import { useStore } from "../store/appStore"
 import axios from "axios"
 import io from "Socket.IO-client"
-import { isActive } from "@tiptap/core"
 
 let newsocket: any
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
