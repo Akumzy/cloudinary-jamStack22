@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE `Account` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
     `type` VARCHAR(191) NOT NULL,
     `provider` VARCHAR(191) NOT NULL,
     `providerAccountId` VARCHAR(191) NOT NULL,
@@ -19,9 +19,9 @@ CREATE TABLE `Account` (
 
 -- CreateTable
 CREATE TABLE `Session` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `sessionToken` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `userId` INTEGER NOT NULL,
     `expires` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Session_sessionToken_key`(`sessionToken`),
@@ -30,7 +30,7 @@ CREATE TABLE `Session` (
 
 -- CreateTable
 CREATE TABLE `User` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NULL,
     `email` VARCHAR(191) NULL,
     `bio` VARCHAR(191) NULL,
@@ -53,10 +53,10 @@ CREATE TABLE `VerificationToken` (
 
 -- CreateTable
 CREATE TABLE `ChatRoom` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
-    `creatorId` VARCHAR(191) NOT NULL,
+    `creatorId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -64,22 +64,25 @@ CREATE TABLE `ChatRoom` (
 
 -- CreateTable
 CREATE TABLE `ChatRoomMember` (
-    `chatRoomId` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `chatRoomId` INTEGER NOT NULL,
+    `userId` INTEGER NOT NULL,
     `joinedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    PRIMARY KEY (`chatRoomId`, `userId`)
+    UNIQUE INDEX `ChatRoomMember_chatRoomId_userId_key`(`chatRoomId`, `userId`),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Message` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `isDefault` BOOLEAN NULL DEFAULT false,
     `image` JSON NULL,
     `text` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `userId` VARCHAR(191) NOT NULL,
-    `roomId` VARCHAR(191) NOT NULL,
+    `userId` INTEGER NOT NULL,
+    `roomId` INTEGER NOT NULL,
+    `updatedAt` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

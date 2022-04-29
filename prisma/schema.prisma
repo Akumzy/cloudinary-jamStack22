@@ -11,8 +11,8 @@ generator client {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
+  id                Int     @id @default(autoincrement())
+  userId            Int
   type              String
   provider          String
   providerAccountId String
@@ -30,15 +30,15 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           Int      @id @default(autoincrement())
   sessionToken String   @unique
-  userId       String
+  userId       Int
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id            String           @id @default(cuid())
+  id            Int              @id @default(autoincrement())
   name          String?
   email         String?          @unique
   bio           String?
@@ -59,35 +59,35 @@ model VerificationToken {
 }
 
 model ChatRoom {
-  id          String           @id @default(cuid())
+  id          Int              @id @default(autoincrement())
   name        String
   description String
-  creatorId   String
+  creatorId   Int
   createdAt   DateTime         @default(now())
   messages    Message[]
   members     ChatRoomMember[]
 }
 
 model ChatRoomMember {
-  id         String   @id @default(cuid())
+  id         Int      @id @default(autoincrement())
   chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  chatRoomId String // relation scalar field (used in the `@relation` attribute above)
+  chatRoomId Int // relation scalar field (used in the `@relation` attribute above)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String // relation scalar field (used in the `@relation` attribute above)
+  userId     Int // relation scalar field (used in the `@relation` attribute above)
   joinedAt   DateTime @default(now())
 
   @@unique([chatRoomId, userId])
 }
 
 model Message {
-  id        String    @id @default(cuid())
+  id        Int       @id @default(autoincrement())
   isDefault Boolean?  @default(false)
   image     Json?
   text      String?
   createdAt DateTime  @default(now())
-  userId    String
+  userId    Int
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roomId    String
+  roomId    Int
   room      ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
   updatedAt DateTime? @updatedAt
 }

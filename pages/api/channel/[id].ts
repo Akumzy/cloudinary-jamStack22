@@ -15,9 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const { id } = req.query
 
   try {
-    const channel: ChatRoom | null = await prisma.chatRoom.findUnique({
+    const channel: ChatRoom | null = await prisma.chatRoom.findFirst({
       where: {
-        id: id as string,
+        id: +id,
       },
       include: {
         members: {
