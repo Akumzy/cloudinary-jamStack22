@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npx prisma generate",
+    "prisma:deploy": "npx prisma db deploy",
+    "prisma:push": "npx prisma db push"
   },
   "dependencies": {
     "@cloudinary/react": "^1.3.0",
