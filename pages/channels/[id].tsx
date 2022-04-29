@@ -4,14 +4,7 @@ import { useRouter } from "next/router"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer"
 import Editor from "../../components/Editor"
-import {
-  CloseMenuIcon,
-  ImageUploadIcon,
-  LeftArrowIcon,
-  MenuIcon,
-  SendIcon,
-  SpinnerIcon,
-} from "../../components/icons/images"
+import { CloseMenuIcon, LeftArrowIcon, MenuIcon, SendIcon, SpinnerIcon } from "../../components/icons/images"
 import { UserComponent } from "../../components/Navigation"
 import axios from "axios"
 import useSWR, { useSWRConfig } from "swr"
