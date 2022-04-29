@@ -32,10 +32,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         description,
         creatorId: user.userId,
       },
-      include: {
-        members: true,
-        messages: true,
-      },
     })
     const member = await prisma.chatRoomMember.create({
       data: {
@@ -67,7 +63,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         },
       },
     })
+    // @ts-ignore
     chatRoom.members = [member]
+    // @ts-ignore
     chatRoom.messages = [message]
 
     res.socket?.server?.io.on("connection", async (socket) => {
