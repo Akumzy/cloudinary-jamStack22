@@ -4,6 +4,7 @@ import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
 import { useStore } from "../store/appStore"
 import axios from "axios"
+//@ts-ignore
 import io from "Socket.IO-client"
 
 let newsocket: any
