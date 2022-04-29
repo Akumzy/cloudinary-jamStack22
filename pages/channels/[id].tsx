@@ -89,14 +89,12 @@ export default function ChatRoom({ user }: any) {
 
   function scrollToBottom() {
     if (messageRef.current) {
-      messageRef.current.scrollIntoView({ behavior: "smooth" });
-      console.log("scrolling");
+      messageRef.current.scrollIntoView();
     }
   }
   useEffect(() => {
     if (socket) {
       socket?.on("new_member", ({ newChannelMember, channelId }: any) => {
-        // console.log("channel info", channel)
         if (channelId === channelDetail?.id) {
           console.log("joined channel", newChannelMember);
           const newchannel = {
@@ -346,18 +344,23 @@ export default function ChatRoom({ user }: any) {
               channelMessages.map((message: IncommingMessage) => {
                 const { image, name } = getChatMemberInfo(message.userId);
                 return (
-                  <div
-                    key={message.id}
-                    className="flex mb-4 space-x-[16px] items-center "
-                  >
-                    <div className="rounded-[7px] w-8 h-8 overflow-hidden hidden md:block">
+                  <div key={message.id} className="flex mb-4 space-x-[16px]  ">
+                    <div className="rounded-[7px] w-11 h-11 overflow-hidden hidden md:block">
                       <img
                         src={image}
                         className="block w-full h-full"
                         alt="user image"
                       />
                     </div>
-                    <div className="flex-1">
+                    <div
+                      className={
+                        `${
+                          message.image?.imageUrl
+                            ? "max-w-[250px]"
+                            : "max-w-2/3"
+                        } ` + "bg-purple-light-purple p-2 rounded-lg"
+                      }
+                    >
                       <div className="flex items-center space-x-4 text-blue-off-blue">
                         <span className="text-base font-medium capitalize ">
                           {name}
@@ -385,7 +388,7 @@ export default function ChatRoom({ user }: any) {
                             <ImageRender imageObject={message.image} />
                           </a>
                         ) : null}
-                        <p className="text-sm font-normal text-white-light">
+                        <p className="text-sm font-normal text-white-light font-mono">
                           {message.text}
                         </p>
                       </div>

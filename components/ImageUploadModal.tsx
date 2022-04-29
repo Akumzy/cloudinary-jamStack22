@@ -3,7 +3,7 @@ import { Fragment, useState } from "react";
 import { AdvancedImage } from "@cloudinary/react";
 import Editor from "./Editor";
 import { getPublicId } from "../utils/utils";
-import { fill } from "@cloudinary/url-gen/actions/resize";
+import { limitFit } from "@cloudinary/url-gen/actions/resize";
 import { Cloudinary } from "@cloudinary/url-gen";
 
 interface ModalProps {
@@ -21,7 +21,6 @@ export default function ImageUploadModal({
   setEditor,
 }: ModalProps) {
   const [editorContent, setEditorContent] = useState("");
-  // const [editor, setEditor] = useState(null)
 
   const cld = new Cloudinary({
     cloud: {
@@ -33,7 +32,7 @@ export default function ImageUploadModal({
   });
   const imagePublicId = getPublicId(imgUrl);
   const myImage = cld.image(imagePublicId);
-  myImage.resize(fill().width(300).height(300));
+  myImage.resize(limitFit().width(320));
 
   return (
     <>

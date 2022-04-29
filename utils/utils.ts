@@ -19,7 +19,7 @@ export function formattedTime(createdAt: string) {
   if (!createdAt) return "";
   const date = new Date(createdAt as any);
   if (isToday(date)) return format(date, "hh:mm a");
-  else if (isYesterday(date)) return "yesterday";
+  else if (isYesterday(date)) return "Yesterday";
   else if (isThisWeek(date)) {
     const day = getDay(date);
     switch (day) {
@@ -71,19 +71,19 @@ export function getPublicId(url: string | null) {
 }
 
 export function scaleImageHeight(h: number, w: number, maxWidth: number) {
-  let ratio = w / h
-  let newH = Math.round((w > maxWidth ? maxWidth : w) * ratio)
+  let ratio = w / h;
+  let newH = Math.round((w > maxWidth ? maxWidth : w) * ratio);
   if (newH > 400) {
-    newH = 400
+    newH = 400;
   }
   if (w < maxWidth) {
     return {
       width: maxWidth,
       height: newH,
-    }
+    };
   }
   return {
     width: w > maxWidth ? maxWidth : w,
     height: newH,
-  }
+  };
 }
