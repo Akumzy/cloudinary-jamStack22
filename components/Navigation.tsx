@@ -50,7 +50,11 @@ export const UserComponent = ({ image }: imageProp) => {
                 </button>
               </Link>
             </Menu.Item>
-            <Menu.Item onClick={() => setOpen(true)}>
+            <Menu.Item
+              onClick={() => {
+                setOpen(true)
+              }}
+            >
               <button className="flex items-center w-full px-2 py-2 space-x-2 text-base font-normal text-gray-900 rounded-md group hover:bg-grey-light hover:bg-gray-400">
                 <GroupUserIcon />
                 <span>Credits</span>
