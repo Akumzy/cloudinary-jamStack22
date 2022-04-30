@@ -20,7 +20,6 @@ import { formattedTime, getNumberOfDays } from "../../utils/utils"
 import ImageUploadModal from "../../components/ImageUploadModal"
 import { v4 as uuid } from "uuid"
 import ChatRoomWidget from "../../components/ChatRoomWidget"
-import Script from "next/script"
 import ImageRender from "../../components/ImageRender"
 import Gallery from "../../components/Gallery"
 import VideoUploadWidget from "../../components/VideoUploadWidget"
@@ -193,7 +192,6 @@ export default function ChatRoom({ user }: any) {
   }
   return (
     <div className="flex h-full min-h-screen bg-white-offwhite ">
-      <Script src="https://widget.cloudinary.com/v2.0/global/all.js" strategy="beforeInteractive" />
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
         <div className="w-full h-[60px] px-[27px] py-[17px] boxShadow ">
           <Link href="/channels">
