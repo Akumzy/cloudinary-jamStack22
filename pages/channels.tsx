@@ -145,7 +145,7 @@ export default function Channels({ user }: Props) {
           </div>
           <div className="px-[27px] py-10 bg-black flex-1 flex items-center justify-center ">
             <div className="text-center">
-              <h2 className="mb-5 text-2xl font-bold uppercase">Welcome to JamStack-Chat-Hub</h2>
+              <h2 className="mb-5 text-2xl font-bold uppercase">Welcome to JamStack-Community-Hub</h2>
               <p className="text-lg ">
                 Kindly click on any Channel on the Sidebar to Join and Start discussing with like minds!
               </p>
@@ -154,7 +154,7 @@ export default function Channels({ user }: Props) {
               </p>
               <p className="text-lg">
                 Looking to assembly a community of your own, Click on the plus icon above to Create a Channel of your
-                own!
+                own and help Improve our society!
               </p>
               <p>
                 <strong className="text-lg">All Channels must have descriptive Description...</strong>

@@ -39,6 +39,12 @@ declare global {
   }
 }
 
+interface videoObject {
+  width: number
+  height: number
+  videoUrl: string
+}
+
 interface imageObject {
   width: number
   height: number

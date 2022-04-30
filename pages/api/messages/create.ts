@@ -19,9 +19,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
 
   const user = session.user
 
-  const { channelId, text, image } = req.body
+  const { channelId, text, image, video } = req.body
 
-  if (!image && !text) {
+  if (!image && !text && !video) {
     return res.status(400).json({ message: "Message is required" })
   }
 
@@ -29,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     //retrieve chatroom messages
     const chatRoomMessage = await prisma.message.create({
       data: {
+        video,
         image,
         text,
         userId: +user.userId,

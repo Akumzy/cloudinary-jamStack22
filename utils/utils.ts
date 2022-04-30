@@ -1,6 +1,27 @@
+import { Cloudinary } from "@cloudinary/url-gen";
+import { thumbnail } from "@cloudinary/url-gen/actions/resize";
+import { face } from "@cloudinary/url-gen/qualifiers/focusOn";
+import { focusOn } from "@cloudinary/url-gen/qualifiers/gravity";
 import { isToday, isYesterday, isThisWeek, isThisYear } from "date-fns";
 import format from "date-fns/format";
 import getDay from "date-fns/getDay";
+
+export const cld = new Cloudinary({
+  cloud: {
+    cloudName: "codewithwhyte",
+  },
+  url: {
+    secure: true,
+  },
+});
+
+export function reSizeByZoom() {
+  return thumbnail()
+    .height(150)
+    .aspectRatio("5:6")
+    .zoom(0.75)
+    .gravity(focusOn(face()));
+}
 
 // is file a valid image file
 export const isImage = (file: any) => {

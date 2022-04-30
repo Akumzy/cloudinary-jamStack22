@@ -42,7 +42,10 @@ export default function Gallery(props: Props) {
             &#8203;
           </span>
           <div className="fixed top-8 right-16 z-40 ">
-            <button className="rounded-full " onClick={onClose}>
+            <button
+              className="rounded-full hover:bg-red-800 "
+              onClick={onClose}
+            >
               <CancelIcon />
             </button>
           </div>

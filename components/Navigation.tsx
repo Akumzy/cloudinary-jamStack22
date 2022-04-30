@@ -1,5 +1,4 @@
 import { Menu } from "@headlessui/react"
-import Image from "next/image"
 import { ArrowDownIcon, GroupUserIcon, LogoIcon, LogoutIcon, UserIcon } from "./icons/images"
 import { useFloating, shift, offset, flip } from "@floating-ui/react-dom"
 import { signOut } from "next-auth/react"
@@ -50,12 +49,13 @@ export const UserComponent = ({ image }: imageProp) => {
                 </button>
               </Link>
             </Menu.Item>
-            <Menu.Item
-              onClick={() => {
-                setOpen(true)
-              }}
-            >
-              <button className="flex items-center w-full px-2 py-2 space-x-2 text-base font-normal text-gray-900 rounded-md group hover:bg-grey-light hover:bg-gray-400">
+            <Menu.Item>
+              <button
+                onClick={() => {
+                  setOpen(true)
+                }}
+                className="flex items-center w-full px-2 py-2 space-x-2 text-base font-normal text-gray-900 rounded-md group hover:bg-grey-light hover:bg-gray-400"
+              >
                 <GroupUserIcon />
                 <span>Credits</span>
               </button>
