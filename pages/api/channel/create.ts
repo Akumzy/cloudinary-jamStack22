@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       data: {
         name,
         description,
-        creatorId: user.userId,
+        creatorId: +user.userId,
         createdAt: new Date(),
       },
     })
@@ -52,11 +52,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     chatRoom.members = [member]
     // @ts-ignore
     chatRoom.messages = [message]
-    console.log(JSON.stringify(chatRoom, null, 2))
-    res.socket?.server?.io.on("connection", async (socket) => {
-      socket.broadcast.emit("channelCreated", chatRoom)
-      socket.join(chatRoom.id + "")
-    })
 
     return res.status(200).json(chatRoom)
 

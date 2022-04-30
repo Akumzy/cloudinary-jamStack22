@@ -31,16 +31,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       data: {
         image,
         text,
-        userId: user.userId,
+        userId: +user.userId,
         roomId: +channelId as number,
       },
     })
-
-    res.socket?.server?.io.on("connection", async (socket) => {
-      socket.broadcast.to(channelId + "").emit("new_message", chatRoomMessage)
-    })
-
-    // res.socket?.server?.io.to(channelId).emit("new_message", chatRoomMessage)
 
     if (!chatRoomMessage) return res.status(404).json({ message: "channel not found" })
     return res.status(200).json(chatRoomMessage)

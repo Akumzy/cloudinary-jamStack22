@@ -1,9 +1,8 @@
-import { getSession, useSession } from "next-auth/react"
+import { getSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ChannelRoomsDrawer from "../../components/ChannelRoomsDrawer"
-import Editor from "../../components/Editor"
 import { CloseMenuIcon, LeftArrowIcon, MenuIcon, SendIcon, SpinnerIcon } from "../../components/icons/images"
 import { UserComponent } from "../../components/Navigation"
 import axios from "axios"
@@ -14,7 +13,6 @@ import { formattedTime, getNumberOfDays } from "../../utils/utils"
 import ImageUploadModal from "../../components/ImageUploadModal"
 import { v4 as uuid } from "uuid"
 import ChatRoomWidget from "../../components/ChatRoomWidget"
-import Script from "next/script"
 import ImageRender from "../../components/ImageRender"
 import Gallery from "../../components/Gallery"
 
@@ -47,17 +45,16 @@ export default function ChatRoom({ user }: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [openMenu, setOpenMenu] = useState(false)
   const [openModalMenu, setOpenModalMenu] = useState(false)
-  // const [imageUploadModal, setImageUploadModal] = useState<boolean>(false)
   const { id } = router.query
   const [editorContent, setEditorContent] = useState("")
   const socket = useStore((state: any) => state.socket)
-  const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher)
-  const { data: channelMessages, error: messageError } = useSWR(`/api/messages/${id}`, messageFetcher)
+  const { data: channelDetail, error } = useSWR(`/api/channel/${id}`, fetcher, { refreshInterval: 1000 })
+  const { data: channelMessages, error: messageError } = useSWR(`/api/messages/${id}`, messageFetcher, {
+    refreshInterval: 1000,
+  })
   const channelMembers = useMemo(() => channelDetail?.members, [channelDetail])
   const messageRef = useRef<HTMLDivElement>(null)
-  const [editor, setEditor] = useState<any>(null)
   const [isMessageLoading, setIsMessageLoading] = useState<boolean>(false)
-  const [modalEditor, setModalEditor] = useState<any>(null)
   const [activeImage, setActiveImage] = useState<imageObject | null>(null)
   const channelCreator = useMemo(() => {
     return channelMembers ? channelMembers.find((member: any) => member.userId === channelDetail.creatorId).user : null
@@ -76,31 +73,6 @@ export default function ChatRoom({ user }: any) {
       messageRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
     }
   }
-  useEffect(() => {
-    if (socket) {
-      socket?.on("new_member", ({ newChannelMember, channelId }: any) => {
-        if (channelId === channelDetail?.id) {
-          console.log("joined channel", newChannelMember)
-          const newchannel = {
-            ...channelDetail,
-            members: [...channelDetail.members, newChannelMember],
-          }
-          const options = { optimisticData: newchannel, rollbackOnError: true }
-          mutate(`/api/channel/${id}`, fetcher, options)
-        }
-      })
-      socket.on("new_message", (chatRoomMessage: any) => {
-        if (chatRoomMessage.roomId === channelDetail?.id) {
-          const newMessages = [...channelMessages, chatRoomMessage]
-          const options = {
-            optimisticData: newMessages,
-            rollbackOnError: true,
-          }
-          mutate(`/api/messages/${id}`, messageFetcher, options)
-        }
-      })
-    }
-  }, [])
 
   useEffect(() => {
     if (Array.isArray(channelMessages)) {
@@ -120,42 +92,25 @@ export default function ChatRoom({ user }: any) {
     setOpenMenu(false)
   }
 
-  function handleJoinChannel() {
+  async function handleJoinChannel() {
     setIsLoading(true)
-    console.log("join channel")
-    socket?.emit("join_channel", { channelId: id, userId: user?.userId }, (error: any, channelMember: any) => {
-      if (error) {
-        console.error("error joining channel", error)
-        setIsLoading(false)
-      } else {
-        console.log("joined channel", channelMember)
-        if (channelMember.chatRoomId === channelDetail?.id) {
-          const newchannel = {
-            ...channelDetail,
-            members: [...channelDetail.members, channelMember],
-          }
-          const options = {
-            optimisticData: newchannel,
-            rollbackOnError: true,
-          }
-          mutate(`/api/channel/${id}`, newchannel, options)
-          setIsLoading(false)
-        }
-      }
-    })
-    console.log("channelDetail", channelDetail)
-  }
 
-  // console.log("channel messages", channelMessages)
+    try {
+      await axios.post("/api/channel/join", { channelId: id, userId: user?.userId })
+      setIsLoading(false)
+    } catch (error) {
+      console.error(error)
+      setIsLoading(false)
+    }
+  }
 
   const getChatMemberInfo = (userId: string): User => {
     return channelMembers?.find((member: any) => member.userId === userId).user
   }
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (content?: string) => {
     setIsMessageLoading(true)
-    // console.log(modalEditor.getText(), "text")
-    const messagetext = modalEditor?.getText() ?? editorContent
+    const messagetext = content ?? editorContent
     try {
       const postData = {
         channelId: id,
@@ -175,13 +130,12 @@ export default function ChatRoom({ user }: any) {
       const options = { optimisticData: newmessage, rollbackOnError: true }
       mutate(`/api/messages/${id}`, updateChat(postData, channelMessages), options)
 
-      modalEditor?.commands?.clearContent(true)
       setUploadPhoto({
         imageUrl: "",
         height: 0,
         width: 0,
       })
-      editor.commands.clearContent(true)
+      setEditorContent("")
     } catch (error) {
       console.error("error sending message", error)
     }
@@ -195,13 +149,8 @@ export default function ChatRoom({ user }: any) {
       width: 0,
     })
   }
-  const imageRef = useRef<HTMLImageElement>(null)
-  function imageClicked() {
-    console.log("this image was clicked", imageRef.current)
-  }
   return (
     <div className="flex h-full min-h-screen bg-white-offwhite ">
-      <Script src="https://widget.cloudinary.com/v2.0/global/all.js" strategy="beforeInteractive" />
       <div className="w-[324px] bg-[#120F13] text-white hidden md:block ">
         <div className="w-full h-[60px] px-[27px] py-[17px] boxShadow ">
           <Link href="/channels">
@@ -357,12 +306,18 @@ export default function ChatRoom({ user }: any) {
             </div>
           ) : (
             <div className=" bg-purple-off-purple px-[17px] py-2 flex justify-between items-center rounded-lg ">
-              <Editor setTextEditor={setEditor} setEditorContent={setEditorContent} />
+              <input
+                type={"text"}
+                value={editorContent}
+                onChange={({ target }) => setEditorContent(target.value)}
+                placeholder="write a comment..."
+                className="w-full text-white bg-transparent outline-none "
+              />
 
               <ChatRoomWidget update={setUploadPhoto} />
               <button
                 disabled={!editorContent.trim() || isMessageLoading}
-                onClick={handleSendMessage}
+                onClick={() => handleSendMessage()}
                 className="flex items-center justify-center w-8 h-8 p-2 text-white hover:rounded-full hover:bg-white hover:text-green-400 "
               >
                 {isMessageLoading ? <SpinnerIcon /> : <SendIcon />}
@@ -371,7 +326,6 @@ export default function ChatRoom({ user }: any) {
           )}
         </footer>
         <ImageUploadModal
-          setEditor={setModalEditor}
           handleUpload={handleSendMessage}
           imgUrl={uploadPhoto.imageUrl}
           isOpen={uploadPhoto.imageUrl ? true : false}

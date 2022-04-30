@@ -48,7 +48,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   const { image } = req.body
-  console.log("My New Upload", image)
 
   //update userphoto in database
   try {

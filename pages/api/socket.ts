@@ -22,7 +22,9 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
     console.log("New Socket.io server...")
     // adapt Next's net Server to http Server
     const httpServer: NetServer = res.socket.server as any
-    const io = new ServerIO(httpServer)
+    const io = new ServerIO(httpServer, {
+      path: "/api/socket",
+    })
     io.on("connection", async (socket) => {
       socket.on("set_active", async (data: Active, ack: Function) => {
         console.log("data", data)
@@ -39,8 +41,8 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
               },
             },
           })
-          const userChannelsIds = userChannels.map((channel) => channel.id)
-          userChannelsIds.forEach((channelId) => {
+          const userChannelsIds = userChannels.map((channel: any) => channel.id)
+          userChannelsIds.forEach((channelId: any) => {
             socket.join(channelId + "")
             socket.broadcast.to(channelId + "").emit("active", data.user)
           })
@@ -57,12 +59,12 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
             data: {
               user: {
                 connect: {
-                  id: data.userId,
+                  id: +data.userId,
                 },
               },
               chatRoom: {
                 connect: {
-                  id: data.channelId,
+                  id: +data.channelId,
                 },
               },
             },
