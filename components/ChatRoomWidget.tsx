@@ -19,14 +19,13 @@ class ChatRoomWidget extends Component<MyProps> {
             height: result.info.height,
             width: result.info.width,
           })
-          console.log("new IMGurl", result.info)
+          // console.log("new IMGurl", result.info)
         }
       },
     )
     document.getElementById("upload-icon")?.addEventListener(
       "click",
       function () {
-        console.log("Eze")
         myWidget.open()
       },
       false,
@@ -37,10 +36,7 @@ class ChatRoomWidget extends Component<MyProps> {
     return (
       <button
         id="upload-icon"
-        onClick={() => {
-          console.log("i am clicked")
-        }}
-        className="hover:rounded-full hover:bg-black w-8 h-8 justify-center p-2 flex items-center hover:text-green-400 text-white "
+        className="flex items-center justify-center w-8 h-8 p-2 text-white hover:rounded-full hover:bg-black hover:text-green-400 "
       >
         <CameraIcon />
       </button>

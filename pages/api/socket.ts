@@ -41,8 +41,8 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
               },
             },
           })
-          const userChannelsIds = userChannels.map((channel) => channel.id)
-          userChannelsIds.forEach((channelId) => {
+          const userChannelsIds = userChannels.map((channel: any) => channel.id)
+          userChannelsIds.forEach((channelId: any) => {
             socket.join(channelId + "")
             socket.broadcast.to(channelId + "").emit("active", data.user)
           })

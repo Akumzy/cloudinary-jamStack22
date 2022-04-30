@@ -1,5 +1,4 @@
 import Navigation from "../components/Navigation"
-import Script from "next/script"
 import { getSession } from "next-auth/react"
 import { useState } from "react"
 import { updateUserProfile } from "../services/profile"
@@ -44,7 +43,6 @@ export default function EditProfile({ user }: Props) {
 
   return (
     <div className="h-full min-h-screen bg-white-offwhite">
-      <Script src="https://widget.cloudinary.com/v2.0/global/all.js" strategy="beforeInteractive" />
       <div className="px-4 py-2 ">
         <Navigation name={user.name} image={userPhoto} />
       </div>

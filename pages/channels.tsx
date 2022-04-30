@@ -24,19 +24,19 @@ export default function Channels({ user }: Props) {
   const [openModalMenu, setOpenModalMenu] = useState(false)
   const socket = useStore((state: any) => state.socket)
   const router = useRouter()
-  const { data: channels } = useSWR("listChannels", listChannelsFetcher)
+  const { data: channels } = useSWR("listChannels", listChannelsFetcher, { refreshInterval: 1000 })
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("channelCreated", (channel: any) => {
-        toast.success("New Channel Created")
-        console.log("channelCreated", channel)
-        const newchannel = [...(channels || []), channel]
-        const options = { optimisticData: newchannel, rollbackOnError: true }
-        mutate("listChannels", newchannel, options)
-      })
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("channelCreated", (channel: any) => {
+  //       toast.success("New Channel Created")
+  //       console.log("channelCreated", channel)
+  //       const newchannel = [...(channels || []), channel]
+  //       const options = { optimisticData: newchannel, rollbackOnError: true }
+  //       mutate("listChannels", newchannel, options)
+  //     })
+  //   }
+  // }, [])
 
   function closeMenuModal() {
     setOpenModalMenu(false)
